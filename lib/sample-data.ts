@@ -380,3 +380,148 @@ export const whyChoose: WhyItem[] = [
     icon: BookOpen,
   },
 ]
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Phase 5 — Course content (Course → Module → Lesson). Sample/static only.
+   Generated deterministically from each course's topics so every course has a
+   consistent module/lesson tree without hand-authoring all of them. Mirrors the
+   Module / Lesson models in DATABASE_MODELS.md (LessonType TEXT|VIDEO, duration,
+   isFreePreview).
+   ────────────────────────────────────────────────────────────────────────── */
+
+export type CourseLessonKind = "video" | "reading"
+
+export type CourseLesson = {
+  id: string
+  title: string
+  kind: CourseLessonKind
+  durationMinutes: number
+  hasResource: boolean
+  isFreePreview: boolean
+}
+
+export type CourseModule = {
+  id: string
+  title: string
+  summary: string
+  lessons: CourseLesson[]
+}
+
+export type CourseContent = {
+  slug: string
+  modules: CourseModule[]
+  outcomes: string[]
+}
+
+const LESSON_BEATS = [
+  "Core concepts",
+  "Worked examples",
+  "Common pitfalls",
+  "Speed techniques",
+  "Previous-year drills",
+]
+
+const LESSONS_PER_MODULE = [5, 4, 4, 3]
+
+function buildModule(slug: string, examTag: string, topic: string, mi: number): CourseModule {
+  const count = LESSONS_PER_MODULE[mi % LESSONS_PER_MODULE.length]
+  const lessons: CourseLesson[] = Array.from({ length: count }, (_, li) => ({
+    id: `${slug}__m${mi + 1}l${li + 1}`,
+    title: `${topic} — ${LESSON_BEATS[li % LESSON_BEATS.length]}`,
+    kind: li % 3 === 1 ? "reading" : "video",
+    durationMinutes: 8 + ((mi * 5 + li * 4) % 15),
+    hasResource: li % 2 === 0,
+    isFreePreview: mi === 0 && li === 0,
+  }))
+  const totalMin = lessons.reduce((s, l) => s + l.durationMinutes, 0)
+  void examTag
+  return {
+    id: `${slug}__m${mi + 1}`,
+    title: `Module ${mi + 1} · ${topic}`,
+    summary: `${count} lessons · ${totalMin} min`,
+    lessons,
+  }
+}
+
+function generateCourseContent(course: Course): CourseContent {
+  const topics = course.topics.length ? course.topics : ["Foundations"]
+  const moduleTopics = topics.slice(0, 4)
+  while (moduleTopics.length < 3) moduleTopics.push(`${topics[0]} — advanced`)
+  const modules = moduleTopics.map((t, mi) => buildModule(course.slug, course.examTag, t, mi))
+  const outcomes = [
+    `Build exam-ready intuition for ${topics[0].toLowerCase()}`,
+    `Solve ${course.examTag} problems under real time pressure`,
+    "Recognise the question patterns that repeat every year",
+    "Avoid the silly mistakes that cost the most marks",
+    "Track your weak topics and close them with targeted practice",
+    "Finish with a revision plan you can actually follow",
+  ]
+  return { slug: course.slug, modules, outcomes }
+}
+
+export const courseContentBySlug: Record<string, CourseContent> = Object.fromEntries(
+  courses.map((c) => [c.slug, generateCourseContent(c)])
+)
+
+export function getCourseContent(slug: string): CourseContent | undefined {
+  return courseContentBySlug[slug]
+}
+
+export type FlatLesson = {
+  lesson: CourseLesson
+  module: CourseModule
+  moduleIndex: number
+  lessonIndex: number
+  globalIndex: number
+}
+
+export function flattenLessons(content: CourseContent): FlatLesson[] {
+  const flat: FlatLesson[] = []
+  content.modules.forEach((module, moduleIndex) => {
+    module.lessons.forEach((lesson, lessonIndex) => {
+      flat.push({ lesson, module, moduleIndex, lessonIndex, globalIndex: flat.length })
+    })
+  })
+  return flat
+}
+
+export function courseTotals(content: CourseContent) {
+  const flat = flattenLessons(content)
+  const totalMinutes = flat.reduce((s, f) => s + f.lesson.durationMinutes, 0)
+  return { totalLessons: flat.length, totalMinutes }
+}
+
+export type LessonLocation = {
+  course: Course
+  content: CourseContent
+  flat: FlatLesson
+  prev?: CourseLesson
+  next?: CourseLesson
+}
+
+const lessonLookup: Map<string, { slug: string; globalIndex: number }> = (() => {
+  const map = new Map<string, { slug: string; globalIndex: number }>()
+  for (const c of courses) {
+    flattenLessons(courseContentBySlug[c.slug]).forEach((f) =>
+      map.set(f.lesson.id, { slug: c.slug, globalIndex: f.globalIndex })
+    )
+  }
+  return map
+})()
+
+export function getLessonLocation(lessonId: string): LessonLocation | undefined {
+  const hit = lessonLookup.get(lessonId)
+  if (!hit) return undefined
+  const course = courses.find((c) => c.slug === hit.slug)
+  if (!course) return undefined
+  const content = courseContentBySlug[hit.slug]
+  const flat = flattenLessons(content)
+  const idx = hit.globalIndex
+  return {
+    course,
+    content,
+    flat: flat[idx],
+    prev: flat[idx - 1]?.lesson,
+    next: flat[idx + 1]?.lesson,
+  }
+}

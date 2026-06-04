@@ -1,9 +1,9 @@
 import type { Metadata } from "next"
 import { PageHeader } from "@/components/layout/page-header"
-import { ProgressCard } from "@/components/dashboard/progress-card"
 import { RecommendedCourseCard } from "@/components/dashboard/recommended-course-card"
 import { PillLink } from "@/components/marketing/primitives"
-import { enrolledCourses, recommendedCourses } from "@/lib/dashboard-data"
+import { CourseLibrary } from "@/components/courses/course-library"
+import { recommendedCourses } from "@/lib/dashboard-data"
 
 export const metadata: Metadata = { title: "My courses" }
 
@@ -13,7 +13,7 @@ export default function DashboardCoursesPage() {
       <PageHeader
         eyebrow="Learning"
         title="My courses"
-        description="Pick up where you left off. Progress is tracked per lesson."
+        description="Pick up where you left off. Progress is tracked per lesson, and your weak areas surface in analytics."
         actions={
           <PillLink href="/courses" variant="outline" size="md">
             Browse catalog
@@ -21,23 +21,7 @@ export default function DashboardCoursesPage() {
         }
       />
 
-      <section>
-        <h2 className="mb-4 font-serif text-[22px] tracking-[-0.02em] text-ink">Enrolled courses</h2>
-        <div className="grid gap-4 lg:grid-cols-2">
-          {enrolledCourses.map((e) => (
-            <ProgressCard
-              key={e.course.slug}
-              icon={e.course.icon}
-              eyebrow={`${e.course.examTag} · ${e.completedLessons}/${e.course.lessonCount} lessons`}
-              title={e.course.title}
-              subtitle={e.lastLesson}
-              progressPct={e.progressPct}
-              meta="Course progress"
-              cta={{ href: "/dashboard/courses", label: "Resume" }}
-            />
-          ))}
-        </div>
-      </section>
+      <CourseLibrary />
 
       <section>
         <h2 className="mb-4 font-serif text-[22px] tracking-[-0.02em] text-ink">Recommended next</h2>

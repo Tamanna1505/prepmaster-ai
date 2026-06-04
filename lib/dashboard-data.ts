@@ -1,6 +1,15 @@
 import type { LucideIcon } from "lucide-react"
 import { BookOpen, FileCheck2, Gauge, Target } from "lucide-react"
-import { courses, type Course } from "@/lib/sample-data"
+import {
+  courses,
+  courseTotals,
+  flattenLessons,
+  getCourseContent,
+  getLessonLocation,
+  type Course,
+  type CourseContent,
+  type CourseLesson,
+} from "@/lib/sample-data"
 
 /* Phase 4 — sample/static student data only. No DB, no real auth. */
 
@@ -166,3 +175,153 @@ export const recommendedCourses: RecommendedCourse[] = [
   { course: courses[3], reason: "Quant shortcuts to lift your DI speed." },
   { course: courses[4], reason: "Popular with students on your track." },
 ]
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Phase 5 — lesson-level progress + annotation. Sample/static only; derives a
+   deterministic completion state from each enrolled course's progressPct.
+   ────────────────────────────────────────────────────────────────────────── */
+
+export type UiLessonStatus = "completed" | "in-progress" | "available" | "locked"
+
+export type AnnotatedLesson = CourseLesson & { status: UiLessonStatus; href: string }
+
+export type AnnotatedModule = {
+  id: string
+  title: string
+  summary: string
+  unlocked: boolean
+  lessons: AnnotatedLesson[]
+}
+
+export type CourseProgress = {
+  completedLessonIds: string[]
+  currentLessonId: string
+  progressPct: number
+}
+
+function buildProgress(slug: string, pct: number): CourseProgress {
+  const content = getCourseContent(slug)
+  if (!content) return { completedLessonIds: [], currentLessonId: "", progressPct: pct }
+  const flat = flattenLessons(content)
+  const completedCount = Math.round((flat.length * pct) / 100)
+  const completedLessonIds = flat.slice(0, completedCount).map((f) => f.lesson.id)
+  const currentLessonId = flat[completedCount]?.lesson.id ?? flat[flat.length - 1].lesson.id
+  return { completedLessonIds, currentLessonId, progressPct: pct }
+}
+
+/* Progress for the courses the sample student is enrolled in. */
+export const courseProgress: Record<string, CourseProgress> = Object.fromEntries(
+  enrolledCourses.map((e) => [e.course.slug, buildProgress(e.course.slug, e.progressPct)])
+)
+
+export type StudentCourse = {
+  course: Course
+  content: CourseContent
+  modules: AnnotatedModule[]
+  totalLessons: number
+  totalMinutes: number
+  completedCount: number
+  progressPct: number
+  currentLessonId: string
+  currentLesson?: CourseLesson
+  isEnrolled: boolean
+}
+
+/* Annotate a course's modules/lessons with the student's progress + lock state.
+   Works for any course — un-enrolled courses show a single unlocked module. */
+export function getStudentCourse(slug: string): StudentCourse | undefined {
+  const course = courses.find((c) => c.slug === slug)
+  const content = getCourseContent(slug)
+  if (!course || !content) return undefined
+
+  const flat = flattenLessons(content)
+  const prog = courseProgress[slug]
+  const isEnrolled = Boolean(prog)
+  const completed = new Set(prog?.completedLessonIds ?? [])
+  const currentLessonId = prog?.currentLessonId ?? flat[0]?.lesson.id ?? ""
+  const currentModuleIndex = content.modules.findIndex((m) =>
+    m.lessons.some((l) => l.id === currentLessonId)
+  )
+  const { totalLessons, totalMinutes } = courseTotals(content)
+
+  const modules: AnnotatedModule[] = content.modules.map((m, mi) => {
+    const moduleUnlocked = isEnrolled ? mi <= currentModuleIndex : mi === 0
+    const lessons: AnnotatedLesson[] = m.lessons.map((l) => {
+      let status: UiLessonStatus
+      if (completed.has(l.id)) status = "completed"
+      else if (l.id === currentLessonId) status = "in-progress"
+      else if (!moduleUnlocked && !l.isFreePreview) status = "locked"
+      else status = "available"
+      return { ...l, status, href: `/dashboard/lessons/${l.id}` }
+    })
+    return {
+      id: m.id,
+      title: m.title,
+      summary: m.summary,
+      unlocked: moduleUnlocked || m.lessons.some((l) => l.isFreePreview),
+      lessons,
+    }
+  })
+
+  return {
+    course,
+    content,
+    modules,
+    totalLessons,
+    totalMinutes,
+    completedCount: completed.size,
+    progressPct: prog?.progressPct ?? Math.round((completed.size / Math.max(totalLessons, 1)) * 100),
+    currentLessonId,
+    currentLesson: flat.find((f) => f.lesson.id === currentLessonId)?.lesson,
+    isEnrolled,
+  }
+}
+
+export type LessonContext = {
+  course: Course
+  moduleTitle: string
+  lesson: CourseLesson
+  status: UiLessonStatus
+  prev?: CourseLesson
+  next?: CourseLesson
+  studentCourse: StudentCourse
+}
+
+export function getLessonContext(lessonId: string): LessonContext | undefined {
+  const loc = getLessonLocation(lessonId)
+  if (!loc) return undefined
+  const studentCourse = getStudentCourse(loc.course.slug)
+  if (!studentCourse) return undefined
+  let status: UiLessonStatus = "available"
+  for (const m of studentCourse.modules) {
+    const found = m.lessons.find((l) => l.id === lessonId)
+    if (found) {
+      status = found.status
+      break
+    }
+  }
+  return {
+    course: loc.course,
+    moduleTitle: loc.flat.module.title,
+    lesson: loc.flat.lesson,
+    status,
+    prev: loc.prev,
+    next: loc.next,
+    studentCourse,
+  }
+}
+
+/* AI study tips — teal "AI study tip" card on the lesson viewer. */
+export const studyTips = [
+  "Re-derive the key formula from scratch before the worked example — recall beats re-reading.",
+  "After this lesson, attempt 3 mixed problems on this topic to lock it into long-term memory.",
+  "Sketch the diagram by hand. Students who draw retain ~30% more on this topic.",
+  "Time yourself on the practice set — speed is where most marks quietly leak away.",
+  "Note one thing that surprised you. Surprise is a strong signal of a gap worth closing.",
+]
+
+export function studyTipFor(lessonId: string): string {
+  let sum = 0
+  for (const ch of lessonId) sum += ch.charCodeAt(0)
+  return studyTips[sum % studyTips.length]
+}
