@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { PageHeader } from "@/components/layout/page-header"
-import { DashboardTests } from "@/components/dashboard/dashboard-tests"
+import { StudentTestBrowser } from "@/components/tests/student-test-browser"
 
 export const metadata: Metadata = { title: "Mock tests" }
 
@@ -10,9 +10,9 @@ export default function MyTestsPage() {
       <PageHeader
         eyebrow="Practice"
         title="Mock tests"
-        description="Attempt full-length and topic-wise tests. Resume in-progress attempts where you left off — every submission ends with an instant AI report."
+        description="Attempt full-length, sectional, and topic-drill tests. Resume in-progress attempts where you left off — every submission ends with an instant AI report."
       />
-      <DashboardTests />
+      <StudentTestBrowser />
     </div>
   )
 }
