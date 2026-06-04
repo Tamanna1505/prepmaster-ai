@@ -1,29 +1,35 @@
 import type { Metadata } from "next"
-import { CourseCard } from "@/components/courses/course-card"
-import { PageHeader } from "@/components/layout/page-header"
 import { SiteShell } from "@/components/layout/site-shell"
-import { courses } from "@/lib/sample-data"
+import { Container, Eyebrow } from "@/components/marketing/primitives"
+import { CoursesExplorer } from "@/components/marketing/courses-explorer"
 
 export const metadata: Metadata = {
   title: "Courses",
-  description: "Structured courses for JEE, NEET, UPSC, SSC, GATE, and banking exams.",
+  description:
+    "Browse structured courses for JEE, NEET, UPSC, SSC, GATE, and banking exams — built around the syllabus, with topic-wise tests and AI feedback.",
 }
 
 export default function CoursesPage() {
   return (
     <SiteShell>
-      <div className="mx-auto w-full max-w-6xl px-4 py-10">
-        <PageHeader
-          eyebrow="Catalog"
-          title="Courses"
-          description="Browse all structured courses across competitive exams. Every course is built around the syllabus, not the textbook."
-        />
-        <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {courses.map((c) => (
-            <CourseCard key={c.slug} course={c} />
-          ))}
-        </div>
-      </div>
+      <section className="border-b border-line bg-cream-100 py-14 sm:py-16">
+        <Container wide>
+          <Eyebrow>Course catalog</Eyebrow>
+          <h1 className="mt-3 max-w-3xl font-serif text-[40px] leading-[1.04] tracking-[-0.02em] text-ink sm:text-[52px]">
+            Courses built around the syllabus
+          </h1>
+          <p className="mt-4 max-w-xl text-[17px] leading-[1.6] text-cocoa">
+            Every lesson earned its place. Filter by exam, search by topic, and start with a track
+            that fits where you are today.
+          </p>
+        </Container>
+      </section>
+
+      <section className="bg-cream-100 py-8 sm:py-10">
+        <Container wide>
+          <CoursesExplorer />
+        </Container>
+      </section>
     </SiteShell>
   )
 }

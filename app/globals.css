@@ -4,6 +4,61 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ──────────────────────────────────────────────────────────────────────────
+   PrepMaster AI — brand design tokens (see DESIGN_SYSTEM.md §3, §4, §7)
+   Additive layer. These tokens are namespaced so they never collide with the
+   shadcn semantic tokens used by the dashboard/admin areas.
+   ────────────────────────────────────────────────────────────────────────── */
+@theme {
+  /* Brand fonts (wired via next/font in app/layout.tsx) */
+  --font-serif: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  --font-ui: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-data: var(--font-spline-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  /* Raw brand ramp */
+  --color-cream-50: #fdfbf6;
+  --color-cream-100: #faf5ec;
+  --color-cream-200: #f3ebdc;
+  --color-cream-300: #e9dec9;
+  --color-gold-100: #fde08a;
+  --color-gold-200: #fae199;
+  --color-gold-300: #e5c36d;
+  --color-gold-400: #dac27b;
+  --color-gold-500: #b69e58;
+  --color-amber: #f2b463;
+  --color-orange: #d89147;
+  --color-brown: #635237;
+  --color-ink: #170e09;
+  --color-teal: #549faa;
+
+  /* Surfaces & lines */
+  --color-surface: #ffffff;
+  --color-surface-muted: #f7f1e6;
+  --color-line: #e4d9c4;
+
+  /* Text */
+  --color-cocoa: #4a3f30; /* secondary text on cream */
+  --color-taupe: #7a6e5b; /* muted text / meta */
+  --color-cream-text: #fbf4e6; /* text on ink */
+  --color-gold-ink: #2a2113; /* text on gold blocks */
+
+  /* Badge tones */
+  --color-teal-tint: #e4f0f2;
+  --color-teal-deep: #2c6068;
+  --color-live-tint: #f7e6df;
+  --color-live-deep: #8e2f18;
+
+  /* State */
+  --color-brand-success: #4e8c6a;
+  --color-brand-warning: #d89147;
+  --color-brand-error: #c2502f;
+
+  /* Warm-tinted soft shadows */
+  --shadow-card: 0 1px 2px rgba(23, 14, 9, 0.05), 0 1px 3px rgba(23, 14, 9, 0.04);
+  --shadow-card-hover: 0 10px 28px -8px rgba(23, 14, 9, 0.14), 0 2px 6px rgba(23, 14, 9, 0.06);
+  --shadow-feature: 0 22px 50px -14px rgba(23, 14, 9, 0.24);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -126,5 +181,43 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   PrepMaster AI — brand helpers (DESIGN_SYSTEM.md §7)
+   ────────────────────────────────────────────────────────────────────────── */
+@layer components {
+  /* On-brand focus ring: 2px teal with offset */
+  .focus-ring {
+    @apply outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-teal)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-cream-100)];
+  }
+
+  /* Tracked uppercase eyebrow / overline */
+  .eyebrow {
+    @apply font-ui text-[12px] font-semibold uppercase tracking-[0.14em];
+  }
+
+  /* Tileable Bauhaus pattern band, anchored to the bottom of golden blocks */
+  .pattern-band {
+    background-image: url("/pattern-band.svg");
+    background-repeat: repeat-x;
+    background-position: bottom center;
+    background-size: auto 100%;
+  }
+}
+
+@utility animate-fade-up {
+  animation: pm-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes pm-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

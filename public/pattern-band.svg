@@ -1,0 +1,15 @@
+<svg width="240" height="44" viewBox="0 0 240 44" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation">
+  <!-- Tileable Bauhaus geometric band (repeat-x). Self-contained unit, no shapes cross the L/R edges. -->
+  <!-- scalloped half-circle -->
+  <path d="M8 44a18 18 0 0 1 36 0z" fill="#D89147"/>
+  <!-- solid circle -->
+  <circle cx="74" cy="26" r="9" fill="#170E09"/>
+  <!-- triangle -->
+  <path d="M104 44l16-26 16 26z" fill="#E5C36D"/>
+  <!-- quarter circle -->
+  <path d="M156 44V20a24 24 0 0 1 24 24z" fill="#B69E58"/>
+  <!-- ring -->
+  <circle cx="206" cy="24" r="10" stroke="#170E09" stroke-width="3.5" fill="none"/>
+  <!-- small dot -->
+  <circle cx="230" cy="34" r="5" fill="#D89147"/>
+</svg>

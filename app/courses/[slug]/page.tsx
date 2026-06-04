@@ -1,10 +1,15 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ArrowLeft, Clock, GraduationCap, Star, Users } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
+import { BookOpen, Clock, Star, Users } from "lucide-react"
 import { SiteShell } from "@/components/layout/site-shell"
+import {
+  Container,
+  Eyebrow,
+  LearnMore,
+  PillLink,
+  Tag,
+} from "@/components/marketing/primitives"
+import { CourseSyllabus, type SyllabusModule } from "@/components/marketing/course-syllabus"
 import { courses } from "@/lib/sample-data"
 
 export async function generateMetadata({
@@ -20,6 +25,34 @@ export async function generateMetadata({
   }
 }
 
+/* Sample module outline — the live Course → Module → Lesson hierarchy lands in
+   Phase 5 (PRD §9). */
+function sampleModules(course: (typeof courses)[number]): SyllabusModule[] {
+  const [t0, t1, t2, t3] = course.topics
+  return [
+    {
+      title: "Module 1 · Foundations",
+      meta: "8 lessons · 5 hrs",
+      lessons: [`${t0 ?? "Core concepts"} — overview`, "Key definitions and intuition", "Worked examples"],
+    },
+    {
+      title: `Module 2 · ${t1 ?? "Core concepts"}`,
+      meta: "14 lessons · 11 hrs",
+      lessons: ["Concept videos", "Common pitfalls", "Topic-wise practice set", "Mini mock test"],
+    },
+    {
+      title: `Module 3 · ${t2 ?? "Advanced problems"}`,
+      meta: "11 lessons · 9 hrs",
+      lessons: ["Advanced problem patterns", "Previous-year drills", "Speed techniques"],
+    },
+    {
+      title: `Module 4 · ${t3 ?? "Revision"} & mock tests`,
+      meta: "6 lessons · 4 hrs",
+      lessons: ["Full-length mock", "AI feedback walkthrough", "Final revision sheet"],
+    },
+  ]
+}
+
 export default async function CourseDetailPage({
   params,
 }: {
@@ -30,102 +63,109 @@ export default async function CourseDetailPage({
   if (!course) notFound()
 
   const Icon = course.icon
+  const modules = sampleModules(course)
 
   return (
     <SiteShell>
-      <div className="mx-auto w-full max-w-5xl px-4 py-10">
-        <Link
-          href="/courses"
-          className="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="size-3.5" /> All courses
-        </Link>
-        <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <span className="grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
-                <Icon className="size-6" />
-              </span>
-              <Badge variant="secondary">{course.examTag}</Badge>
-            </div>
-            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{course.title}</h1>
-            <p className="text-base text-muted-foreground">{course.summary}</p>
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                <Clock className="size-4" /> {course.durationHours} hours
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Users className="size-4" /> {course.studentsEnrolled.toLocaleString()} enrolled
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Star className="size-4" /> {course.rating} / 5
-              </span>
-              <span className="flex items-center gap-1.5">
-                <GraduationCap className="size-4" /> {course.difficulty}
-              </span>
-            </div>
+      {/* Editorial header */}
+      <section className="border-b border-line bg-cream-100 py-12 sm:py-14">
+        <Container>
+          <LearnMore label="All courses" href="/courses" />
+          <div className="mt-6 flex items-center gap-3">
+            <span className="grid size-12 place-items-center rounded-xl bg-gold-200 text-gold-ink">
+              <Icon className="size-6" strokeWidth={1.75} />
+            </span>
+            <Tag tone="outline">{course.examTag}</Tag>
+            <Tag tone="teal">{course.difficulty}</Tag>
+          </div>
+          <h1 className="mt-5 max-w-3xl font-serif text-[34px] leading-[1.06] tracking-[-0.02em] text-ink sm:text-[46px]">
+            {course.title}
+          </h1>
+          <p className="mt-4 max-w-2xl text-[17px] leading-[1.6] text-cocoa">{course.summary}</p>
+          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-ui text-[14px] text-taupe">
+            <span className="flex items-center gap-1.5">
+              <BookOpen className="size-4" strokeWidth={1.75} /> {course.lessonCount} lessons
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Clock className="size-4" strokeWidth={1.75} /> {course.durationHours} hours
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Users className="size-4" strokeWidth={1.75} />{" "}
+              {course.studentsEnrolled.toLocaleString()} enrolled
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Star className="size-4 fill-amber text-amber" strokeWidth={1.75} />
+              <span className="font-data tracking-[-0.02em] text-ink">
+                {course.rating.toFixed(1)}
+              </span>{" "}
+              / 5
+            </span>
+          </div>
+        </Container>
+      </section>
 
-            <div className="space-y-3">
-              <h2 className="text-lg font-semibold">What you&apos;ll learn</h2>
-              <ul className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
-                {course.topics.map((t) => (
-                  <li
-                    key={t}
-                    className="flex items-center gap-2 rounded-lg border border-border/60 px-3 py-2"
-                  >
-                    <span className="size-1.5 rounded-full bg-primary" /> {t}
-                  </li>
-                ))}
-              </ul>
-            </div>
+      {/* Body */}
+      <section className="bg-cream-100 py-12 sm:py-16">
+        <Container>
+          <div className="grid gap-10 lg:grid-cols-[1.7fr_1fr]">
+            <div className="space-y-10">
+              <div>
+                <Eyebrow>What you&apos;ll learn</Eyebrow>
+                <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
+                  {course.topics.map((t) => (
+                    <li
+                      key={t}
+                      className="flex items-center gap-2.5 rounded-[14px] bg-surface px-4 py-3 font-ui text-[14px] text-cocoa shadow-[inset_0_0_0_1px_var(--color-line)]"
+                    >
+                      <span className="size-1.5 rounded-full bg-orange" /> {t}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-            <div className="space-y-3">
-              <h2 className="text-lg font-semibold">Course outline</h2>
-              <p className="text-sm text-muted-foreground">
-                Full module and lesson outline will be populated once the course schema goes live
-                (Phase 5).
-              </p>
-              <div className="rounded-xl border border-dashed border-border/60 bg-muted/30 p-6 text-sm text-muted-foreground">
-                Module 1 · Foundations · 8 lessons
-                <br />
-                Module 2 · Core concepts · 14 lessons
-                <br />
-                Module 3 · Advanced problems · 11 lessons
-                <br />
-                Module 4 · Mock tests &amp; revision · 6 lessons
+              <div>
+                <Eyebrow>Course outline</Eyebrow>
+                <h2 className="mt-3 font-serif text-[26px] tracking-[-0.02em] text-ink">
+                  {modules.length} modules · {course.lessonCount} lessons
+                </h2>
+                <div className="mt-5">
+                  <CourseSyllabus modules={modules} />
+                </div>
               </div>
             </div>
-          </div>
 
-          <aside className="space-y-4">
-            <div className="rounded-xl border border-border/60 bg-card p-5">
-              <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Free tier
-              </p>
-              <p className="mt-1 text-2xl font-semibold tracking-tight">₹ 0</p>
-              <p className="mt-1 text-xs text-muted-foreground">Full access during MVP.</p>
-              <Link
-                href="/register"
-                className={`${buttonVariants({ size: "lg" })} mt-4 w-full`}
-              >
-                Enroll now
-              </Link>
-              <p className="mt-3 text-xs text-muted-foreground">
-                {course.lessonCount} lessons · {course.durationHours} hours of study.
-              </p>
-            </div>
-            <div className="rounded-xl border border-border/60 bg-card p-5 text-sm">
-              <p className="font-medium">Includes</p>
-              <ul className="mt-2 space-y-1 text-muted-foreground">
-                <li>· Concept videos and notes</li>
-                <li>· Topic-wise mock tests</li>
-                <li>· AI feedback after each attempt</li>
-                <li>· Personal analytics dashboard</li>
-              </ul>
-            </div>
-          </aside>
-        </div>
-      </div>
+            {/* Sticky enroll card */}
+            <aside className="lg:sticky lg:top-24 lg:self-start">
+              <div className="rounded-[24px] bg-surface p-6 shadow-card shadow-[inset_0_0_0_1px_var(--color-line)]">
+                <Eyebrow tone="taupe">Free during MVP</Eyebrow>
+                <p className="mt-2 font-serif text-[38px] leading-none tracking-[-0.02em] text-ink">
+                  ₹0
+                </p>
+                <p className="mt-2 font-ui text-[13px] text-taupe">
+                  Full access while we&apos;re in beta.
+                </p>
+                <PillLink href="/register" variant="ink" size="lg" className="mt-5 w-full">
+                  Enroll now
+                </PillLink>
+                <div className="my-6 h-px bg-line" />
+                <p className="font-ui text-[13px] font-semibold text-ink">This course includes</p>
+                <ul className="mt-3 space-y-2 font-ui text-[14px] text-cocoa">
+                  {[
+                    "Concept videos and notes",
+                    "Topic-wise mock tests",
+                    "AI feedback after each attempt",
+                    "Personal analytics dashboard",
+                  ].map((f) => (
+                    <li key={f} className="flex items-start gap-2.5">
+                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-orange" /> {f}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </aside>
+          </div>
+        </Container>
+      </section>
     </SiteShell>
   )
 }

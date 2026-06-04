@@ -228,3 +228,24 @@ When implementing UI against this system:
 6. **Motion:** cards lift `-3px` with soft shadow on hover; transitions 150–220ms ease-out, no bounce; focus = 2px teal ring.
 7. **Build production-quality** React/Next + Tailwind: clean, accessible, responsive. Use clearly-marked placeholder content/images where real assets are missing.
 8. **Keep this file updated** to reflect what was actually implemented.
+
+---
+
+## 11. Implementation Status (Phase 3 — public website UI)
+
+Implemented against this system on the existing Next.js 16 + **Tailwind v4** project.
+
+**Sanctioned deviations from the locked direction:**
+- **Icons:** Phosphor is not installed; the project already ships **lucide-react** (and `lib/sample-data.ts` types icons as `LucideIcon`). Lucide is used throughout as the icon set. Swap to Phosphor later if desired — icon usage is centralised in the marketing components.
+- **Assets:** `colors_and_type.css` and `ui_kits/website/` were not present. Brand SVGs were authored fresh in `public/`: `mark.svg`, `mark-cream.svg`, `pattern-band.svg`.
+
+**Token wiring (Tailwind v4, CSS-first):**
+- Tokens live in `app/globals.css` under a dedicated `@theme` block, **namespaced** so they don't collide with the shadcn tokens used by the dashboard/admin areas. Notable name changes vs §3 to avoid collisions: page background = `bg-cream-100` / `bg-cream-50`; hairline border = `border-line`; secondary text = `text-cocoa`; muted text = `text-taupe`; on-ink text = `text-cream-text`; on-gold text = `text-gold-ink`. Raw ramp (`gold-*`, `cream-*`, `ink`, `teal`, `orange`, `amber`, `brown`) matches §3 exactly.
+- Fonts wired via `next/font` in `app/layout.tsx`: Newsreader (`font-serif`), Hanken Grotesk (`font-ui`), Spline Sans Mono (`font-data`).
+- Helpers in `globals.css`: `.eyebrow`, `.focus-ring` (2px teal), `.pattern-band`, `animate-fade-up`, and warm shadows `shadow-card` / `shadow-card-hover` / `shadow-feature`.
+
+**Components** live in `components/marketing/` (sections + primitives in `primitives.tsx`) and `components/layout/` (navbar, footer, site-shell). The marketing canvas (cream + ink text + `font-ui`) is applied via `SiteShell`, leaving the dashboard/admin theme untouched.
+
+**Pages implemented:** `/`, `/courses`, `/courses/[slug]`, `/mock-tests`, `/study-material`, `/blog`, `/blog/[slug]`, `/pricing`, `/contact`.
+
+**Out of scope (as instructed):** no database, real auth, or payment logic. Forms and downloads are sample-only and clearly marked. The blog post body and pricing tiers are sample content.

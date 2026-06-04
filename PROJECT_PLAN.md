@@ -93,7 +93,7 @@
   - Student `/dashboard/courses` and `/dashboard/courses/[courseId]` outline.
   - `/dashboard/lessons/[lessonId]` viewer — markdown render for `TEXT`, embedded player for `VIDEO`.
   - `markComplete` action and progress derivation.
-  - Seed one full sample course (3 modules, 8–10 lessons).
+  - Seed one full sample course (3 modules, 8-10 lessons).
 - **Deliverables:** A student can enroll in the seeded course, open lessons, and mark them complete.
 - **Exit criteria:** Course progress updates in real time; the "continue learning" tile on `/dashboard` points to the next incomplete lesson.
 
