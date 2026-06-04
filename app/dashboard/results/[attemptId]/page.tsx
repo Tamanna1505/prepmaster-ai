@@ -1,12 +1,15 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { ChevronLeft, Sparkle } from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import { buildResult, getAttempt } from "@/lib/result-data"
-import { Eyebrow, LearnMore, PillLink, Tag } from "@/components/marketing/primitives"
+import { buildAttemptInsight, type Recommendation } from "@/lib/analytics-data"
+import { PillLink, Tag } from "@/components/marketing/primitives"
 import { ResultSummaryCard } from "@/components/tests/result-summary-card"
 import { SectionPerformance } from "@/components/tests/section-performance"
 import { QuestionReview } from "@/components/tests/question-review"
+import { AiInsightPanel } from "@/components/analytics/ai-insight-panel"
+import { RecommendationCard } from "@/components/analytics/recommendation-card"
 
 export async function generateMetadata({
   params,
@@ -30,6 +33,29 @@ export default async function ResultDetailPage({
   if (!result) notFound()
 
   const { test } = result
+  const insight = buildAttemptInsight(result)
+  const weakest = [...result.topics].sort((a, b) => a.accuracyPct - b.accuracyPct)[0]
+
+  const recs: Recommendation[] = [
+    {
+      priority: "High",
+      title: `Revise ${weakest?.topic ?? "your weakest topic"}`,
+      detail: `At ${weakest?.accuracyPct ?? 0}% here, it's your highest-return fix. One focused module closes most of the gap.`,
+      cta: { label: "Open module", href: "/dashboard/courses" },
+    },
+    {
+      priority: "High",
+      title: "Practice weak topics",
+      detail: "20 targeted questions on your lowest topics, with an instant AI report at the end.",
+      cta: { label: "Start drill", href: "/dashboard/tests/aptitude-speed-drill" },
+    },
+    {
+      priority: "Medium",
+      title: "Retake this test",
+      detail: "Re-attempt to confirm the fixes landed and compare your timing.",
+      cta: { label: "Retake", href: `/dashboard/tests/${test.id}` },
+    },
+  ]
 
   return (
     <div className="space-y-8">
@@ -57,36 +83,24 @@ export default async function ResultDetailPage({
         </h1>
       </div>
 
-      {/* Summary */}
+      {/* Premium summary hero */}
       <ResultSummaryCard result={result} />
 
-      {/* AI feedback + recommended steps */}
-      <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <div className="rounded-[20px] bg-ink p-6 text-cream-text shadow-feature sm:p-7">
-          <div className="flex items-center gap-2">
-            <Sparkle className="size-4 text-gold-200" strokeWidth={1.75} />
-            <span className="eyebrow text-gold-200">AI Performance Insights</span>
-          </div>
-          <p className="mt-3 text-[16px] leading-[1.6] text-cream-text/90">
-            {result.attempt.aiFeedback}
-          </p>
-          <div className="mt-5">
-            <LearnMore label="Open full analytics" href="/dashboard/analytics" tone="cream" />
-          </div>
-        </div>
-
-        <div className="rounded-[20px] bg-gold-200 p-6 text-gold-ink shadow-card">
-          <Eyebrow tone="orange">Recommended next steps</Eyebrow>
-          <ul className="mt-3 space-y-2.5">
-            {result.attempt.recommendedSteps.map((step) => (
-              <li key={step} className="flex items-start gap-2 text-[14px] leading-[1.5] text-brown">
-                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-orange" />
-                {step}
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* CTAs */}
+      <div className="flex flex-wrap items-center gap-3">
+        <PillLink href={`/dashboard/tests/${test.id}`} variant="gold" size="lg">
+          Retake test
+        </PillLink>
+        <PillLink href="/dashboard/tests/aptitude-speed-drill" variant="ink" size="lg">
+          Practice weak topics
+        </PillLink>
+        <PillLink href="/dashboard/analytics" variant="outline" size="lg">
+          View analytics
+        </PillLink>
       </div>
+
+      {/* AI feedback */}
+      <AiInsightPanel insight={insight} analyticsHref="/dashboard/analytics" />
 
       {/* Section + topic performance */}
       <div>
@@ -94,12 +108,20 @@ export default async function ResultDetailPage({
         <SectionPerformance sections={result.sections} topics={result.topics} />
       </div>
 
+      {/* Recommended practice */}
+      <div>
+        <h2 className="mb-4 font-serif text-[22px] tracking-[-0.02em] text-ink">Recommended practice</h2>
+        <div className="grid gap-4 md:grid-cols-3">
+          {recs.map((rec) => (
+            <RecommendationCard key={rec.title} rec={rec} />
+          ))}
+        </div>
+      </div>
+
       {/* Question-wise review */}
       <div>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="font-serif text-[22px] tracking-[-0.02em] text-ink">
-            Question-wise review
-          </h2>
+          <h2 className="font-serif text-[22px] tracking-[-0.02em] text-ink">Question-wise review</h2>
           <PillLink href={`/dashboard/tests/${test.id}`} variant="outline" size="sm">
             Re-attempt test
           </PillLink>
