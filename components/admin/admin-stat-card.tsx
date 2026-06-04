@@ -8,12 +8,14 @@ export function AdminStatCard({
   delta,
   trend,
   icon: Icon,
+  tone = "default",
 }: {
   label: string
   value: string
   delta?: string
   trend?: "up" | "down" | "flat"
   icon: LucideIcon
+  tone?: "default" | "teal"
 }) {
   const TrendIcon = trend === "up" ? ArrowUpRight : trend === "down" ? ArrowDownRight : ArrowRight
 
@@ -21,11 +23,21 @@ export function AdminStatCard({
     <div className="rounded-[18px] bg-surface p-5 shadow-[inset_0_0_0_1px_var(--color-line)] transition-all duration-200 ease-out hover:-translate-y-[2px] hover:shadow-card-hover">
       <div className="flex items-center justify-between">
         <p className="eyebrow text-taupe">{label}</p>
-        <span className="grid size-9 place-items-center rounded-[10px] bg-surface-muted text-brown">
+        <span
+          className={cn(
+            "grid size-9 place-items-center rounded-[10px]",
+            tone === "teal" ? "bg-teal-tint text-teal-deep" : "bg-surface-muted text-brown"
+          )}
+        >
           <Icon className="size-[18px]" strokeWidth={1.75} />
         </span>
       </div>
-      <p className="mt-3 font-data text-[26px] font-semibold leading-none tracking-[-0.02em] text-ink">
+      <p
+        className={cn(
+          "mt-3 font-data text-[26px] font-semibold leading-none tracking-[-0.02em]",
+          tone === "teal" ? "text-teal-deep" : "text-ink"
+        )}
+      >
         {value}
       </p>
       {delta ? (

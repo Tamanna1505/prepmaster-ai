@@ -1,9 +1,7 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import Link from "next/link"
-import { ChevronLeft } from "lucide-react"
 import { courses, getCourseContent } from "@/lib/sample-data"
-import { PageHeader } from "@/components/layout/page-header"
+import { AdminPageHeader } from "@/components/admin/admin-page-header"
 import { CourseForm, type CourseFormInitial } from "@/components/courses/course-form"
 
 export async function generateMetadata({
@@ -50,21 +48,13 @@ export default async function AdminEditCoursePage({
 
   return (
     <div className="space-y-8">
-      <div>
-        <Link
-          href="/admin/courses"
-          className="focus-ring inline-flex items-center gap-1 rounded font-ui text-[13px] font-medium text-cocoa transition-colors hover:text-ink"
-        >
-          <ChevronLeft className="size-4" strokeWidth={2} /> Courses
-        </Link>
-        <div className="mt-3">
-          <PageHeader
-            eyebrow="Content"
-            title={`Edit · ${course.title}`}
-            description="Update course details and restructure its modules and lessons."
-          />
-        </div>
-      </div>
+      <AdminPageHeader
+        eyebrow="Content"
+        title={`Edit · ${course.title}`}
+        description="Update course details and restructure its modules and lessons."
+        backHref="/admin/courses"
+        backLabel="Courses"
+      />
       <CourseForm mode="edit" initial={initial} />
     </div>
   )
