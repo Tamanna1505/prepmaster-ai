@@ -14,7 +14,7 @@ import {
 /* Phase 4 — sample/static student data only. No DB, no real auth. */
 
 export const studentUser = {
-  name: "Rajan Patel",
+  name: "Rajan Punchouty",
   email: "student@prepmaster.ai",
   initials: "RP",
   examTarget: "CAT 2026",

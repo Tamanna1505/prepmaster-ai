@@ -65,7 +65,7 @@ export const sampleAttempts: SampleAttempt[] = [
     aiFeedback:
       "Your general-knowledge base is developing well, but reasoning is where the score plateaued. Several reasoning questions were left unattempted, which suggests time ran short rather than a knowledge gap. Build speed and the score follows.",
     recommendedSteps: [
-      "Practise timed reasoning sets — aim for under 50 seconds per question.",
+      "Practice timed reasoning sets — aim for under 50 seconds per question.",
       "Review the current-affairs questions you missed and note the themes.",
       "Attempt a sectional reasoning test before your next full mock.",
     ],
