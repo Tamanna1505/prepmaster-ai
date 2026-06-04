@@ -1,5 +1,5 @@
 import Link from "next/link"
-import type { LucideIcon } from "lucide-react"
+import { ArrowUpRight, type LucideIcon } from "lucide-react"
 
 export function AdminActionCard({
   href,
@@ -15,14 +15,17 @@ export function AdminActionCard({
   return (
     <Link
       href={href}
-      className="flex items-start gap-3 rounded-xl border border-border/60 bg-card p-4 transition-colors hover:bg-muted/30"
+      className="focus-ring group flex items-start gap-3 rounded-[16px] bg-surface p-4 shadow-[inset_0_0_0_1px_var(--color-line)] transition-all duration-200 ease-out hover:-translate-y-[2px] hover:shadow-card-hover"
     >
-      <span className="grid size-9 place-items-center rounded-lg bg-primary/10 text-primary">
-        <Icon className="size-4" />
+      <span className="grid size-10 shrink-0 place-items-center rounded-[12px] bg-gold-200 text-gold-ink">
+        <Icon className="size-5" strokeWidth={1.75} />
       </span>
-      <div>
-        <p className="text-sm font-medium">{label}</p>
-        <p className="text-xs text-muted-foreground">{description}</p>
+      <div className="min-w-0 flex-1">
+        <p className="flex items-center gap-1 font-ui text-[15px] font-semibold text-ink">
+          {label}
+          <ArrowUpRight className="size-3.5 text-taupe transition-transform duration-150 ease-out group-hover:translate-x-px group-hover:-translate-y-px group-hover:text-ink" />
+        </p>
+        <p className="mt-0.5 font-ui text-[13px] leading-[1.5] text-cocoa">{description}</p>
       </div>
     </Link>
   )

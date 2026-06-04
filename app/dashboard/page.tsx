@@ -1,99 +1,137 @@
 import type { Metadata } from "next"
-import Link from "next/link"
-import { ArrowRight, PlayCircle } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
-import { CourseCard } from "@/components/courses/course-card"
-import { StatCard } from "@/components/dashboard/stat-card"
-import { PageHeader } from "@/components/layout/page-header"
-import { MockTestCard } from "@/components/tests/mock-test-card"
-import { courses, dashboardStats, mockTests } from "@/lib/sample-data"
+import { Flame, PlayCircle, Sparkle } from "lucide-react"
+import { DashboardStatCard } from "@/components/dashboard/dashboard-stat-card"
+import { ProgressCard } from "@/components/dashboard/progress-card"
+import { RecentTestCard } from "@/components/dashboard/recent-test-card"
+import { RecommendedCourseCard } from "@/components/dashboard/recommended-course-card"
+import { WeakAreaCard } from "@/components/dashboard/weak-area-card"
+import { PerformancePreview } from "@/components/dashboard/performance-preview"
+import { Eyebrow, LearnMore, PillLink, Tag } from "@/components/marketing/primitives"
+import {
+  aiRecommendation,
+  continueLearning,
+  performanceTrend,
+  recentResults,
+  recommendedCourses,
+  studentUser,
+  summaryStats,
+  weakAreas,
+} from "@/lib/dashboard-data"
 
 export const metadata: Metadata = { title: "Dashboard" }
 
 export default function DashboardHomePage() {
   return (
-    <div className="space-y-8">
-      <PageHeader
-        eyebrow="Welcome back"
-        title="Your week at a glance"
-        description="Pick up where you left off, or start a new mock test."
-        actions={
-          <Link href="/dashboard/tests" className={buttonVariants({ size: "sm" })}>
-            Start a test <ArrowRight className="size-3.5" />
-          </Link>
-        }
-      />
+    <div className="space-y-10">
+      {/* Welcome */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <Eyebrow>Welcome back</Eyebrow>
+          <h1 className="mt-2 font-serif text-[30px] leading-[1.08] tracking-[-0.02em] text-ink sm:text-[36px]">
+            Good to see you, {studentUser.name.split(" ")[0]}
+          </h1>
+          <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[15px] text-cocoa">
+            <span>
+              Target: <span className="font-semibold text-ink">{studentUser.examTarget}</span>
+            </span>
+            <span className="flex items-center gap-1.5 text-orange">
+              <Flame className="size-4" strokeWidth={1.75} /> {studentUser.streakDays}-day streak
+            </span>
+          </p>
+        </div>
+        <PillLink href="/dashboard/tests" variant="ink" size="lg">
+          Start a test
+        </PillLink>
+      </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {dashboardStats.map((s) => (
-          <StatCard key={s.label} {...s} />
+      {/* Summary stats */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {summaryStats.map((s) => (
+          <DashboardStatCard key={s.label} {...s} />
         ))}
       </div>
 
-      <div className="rounded-2xl border border-border/60 bg-card p-6">
-        <div className="flex items-start justify-between gap-4">
+      {/* Continue learning */}
+      <ProgressCard
+        icon={PlayCircle}
+        eyebrow="Continue learning"
+        title={continueLearning.courseTitle}
+        subtitle={`${continueLearning.lesson} · ~${continueLearning.minutesLeft} min left`}
+        progressPct={continueLearning.progressPct}
+        meta="Course progress"
+        cta={{ href: continueLearning.href, label: "Resume" }}
+      />
+
+      {/* Performance + recent results / AI + weak areas */}
+      <div className="grid gap-6 lg:grid-cols-[1.55fr_1fr]">
+        <div className="space-y-6">
+          <PerformancePreview series={performanceTrend} />
+
           <div>
-            <Badge variant="outline" className="mb-2 gap-1">
-              <PlayCircle className="size-3" /> Continue learning
-            </Badge>
-            <h2 className="text-lg font-semibold">JEE Physics · Module 4 · Lesson 4.3</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Gauss law — applications. ~12 min remaining.
-            </p>
+            <div className="mb-4 flex items-end justify-between">
+              <h2 className="font-serif text-[22px] tracking-[-0.02em] text-ink">
+                Recent mock results
+              </h2>
+              <LearnMore label="All results" href="/dashboard/results" />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {recentResults.slice(0, 4).map((r) => (
+                <RecentTestCard key={r.id} result={r} />
+              ))}
+            </div>
           </div>
-          <Link
-            href="/dashboard/courses"
-            className={buttonVariants({ variant: "outline", size: "sm" })}
-          >
-            Resume
-          </Link>
+        </div>
+
+        <div className="space-y-6">
+          {/* AI recommendation preview */}
+          <div className="rounded-[20px] bg-gold-200 p-6 text-gold-ink shadow-card">
+            <div className="flex items-center gap-2">
+              <Sparkle className="size-4" strokeWidth={1.75} />
+              <span className="eyebrow">AI Performance Insights</span>
+            </div>
+            <p className="mt-3 text-[15px] leading-[1.55] text-gold-ink">
+              {aiRecommendation.summary}
+            </p>
+            <ul className="mt-4 space-y-2">
+              {aiRecommendation.steps.map((step) => (
+                <li key={step} className="flex items-start gap-2 text-[14px] text-brown">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-orange" />
+                  {step}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-5">
+              <LearnMore label="Open analytics" href="/dashboard/analytics" />
+            </div>
+          </div>
+
+          {/* Weak areas */}
+          <div>
+            <div className="mb-4 flex items-end justify-between">
+              <h2 className="font-serif text-[22px] tracking-[-0.02em] text-ink">Weak areas</h2>
+              <Tag tone="teal">Focus next</Tag>
+            </div>
+            <div className="space-y-3">
+              {weakAreas.map((area) => (
+                <WeakAreaCard key={area.topic} area={area} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      <section>
+      {/* Recommended courses */}
+      <div>
         <div className="mb-4 flex items-end justify-between">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Recommended courses
-            </p>
-            <h2 className="mt-1 text-lg font-semibold">Continue exploring</h2>
-          </div>
-          <Link
-            href="/dashboard/courses"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            All courses
-          </Link>
+          <h2 className="font-serif text-[22px] tracking-[-0.02em] text-ink">Recommended for you</h2>
+          <LearnMore label="My courses" href="/dashboard/courses" />
         </div>
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {courses.slice(0, 3).map((c) => (
-            <CourseCard key={c.slug} course={c} href="/dashboard/courses" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {recommendedCourses.map((item) => (
+            <RecommendedCourseCard key={item.course.slug} item={item} />
           ))}
         </div>
-      </section>
-
-      <section>
-        <div className="mb-4 flex items-end justify-between">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              Upcoming tests
-            </p>
-            <h2 className="mt-1 text-lg font-semibold">Stay sharp this week</h2>
-          </div>
-          <Link
-            href="/dashboard/tests"
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            All tests
-          </Link>
-        </div>
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {mockTests.slice(0, 3).map((t) => (
-            <MockTestCard key={t.slug} test={t} />
-          ))}
-        </div>
-      </section>
+      </div>
     </div>
   )
 }

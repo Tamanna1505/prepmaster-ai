@@ -1,62 +1,68 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { Sparkles } from "lucide-react"
-import { buttonVariants } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { AuthShell, Field } from "@/components/auth/auth-shell"
+import { PillButton } from "@/components/marketing/primitives"
 
 export const metadata: Metadata = {
-  title: "Sign in",
-  description: "Sign in to PrepMaster AI.",
+  title: "Log in",
+  description: "Log in to PrepMaster AI.",
 }
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
-      <div className="w-full max-w-md space-y-6 rounded-2xl border border-border/60 bg-card p-8 shadow-sm">
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <span className="grid size-7 place-items-center rounded-md bg-primary text-primary-foreground">
-            <Sparkles className="size-4" />
-          </span>
-          PrepMaster AI
-        </Link>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Sign in to continue your prep.
-          </p>
-        </div>
-        <form className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@example.com" />
-          </div>
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-              <Link
-                href="/contact"
-                className="text-xs text-muted-foreground hover:text-foreground"
-              >
-                Forgot?
-              </Link>
-            </div>
-            <Input id="password" type="password" placeholder="••••••••" />
-          </div>
-          <button type="submit" className={`${buttonVariants({ size: "lg" })} w-full`}>
-            Sign in
-          </button>
-        </form>
-        <p className="text-center text-sm text-muted-foreground">
+    <AuthShell
+      title="Welcome back"
+      subtitle="Log in to continue your prep."
+      footer={
+        <>
           Don&apos;t have an account?{" "}
-          <Link href="/register" className="font-medium text-foreground hover:underline">
-            Get started
+          <Link href="/register" className="focus-ring rounded font-semibold text-orange hover:underline">
+            Create one
           </Link>
-        </p>
-        <p className="text-center text-xs text-muted-foreground">
-          Auth is wired up in Phase 4.
-        </p>
+        </>
+      }
+    >
+      <form className="space-y-5">
+        <Field id="email" label="Email" type="email" placeholder="you@example.com" autoComplete="email" />
+        <Field id="password" label="Password" type="password" placeholder="••••••••" autoComplete="current-password" />
+
+        <div className="flex items-center justify-between">
+          <label htmlFor="remember" className="flex cursor-pointer items-center gap-2 font-ui text-[14px] text-cocoa">
+            <input
+              id="remember"
+              name="remember"
+              type="checkbox"
+              className="focus-ring size-4 rounded-[5px] accent-[var(--color-ink)]"
+            />
+            Remember me
+          </label>
+          <Link
+            href="/contact"
+            className="focus-ring rounded font-ui text-[14px] font-medium text-orange hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </div>
+
+        <PillButton type="submit" variant="ink" size="lg" className="w-full">
+          Log in
+        </PillButton>
+      </form>
+
+      {/* Demo credentials — sample only, no real auth wired in this phase. */}
+      <div className="mt-6 rounded-[16px] bg-surface-muted p-4">
+        <p className="eyebrow text-taupe">Demo credentials</p>
+        <dl className="mt-2.5 space-y-1.5 font-data text-[13px] tracking-[-0.01em] text-cocoa">
+          <div className="flex items-center justify-between gap-3">
+            <dt className="text-taupe">Student</dt>
+            <dd className="text-ink">student@prepmaster.ai</dd>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <dt className="text-taupe">Admin</dt>
+            <dd className="text-ink">admin@prepmaster.ai</dd>
+          </div>
+        </dl>
       </div>
-    </div>
+    </AuthShell>
   )
 }

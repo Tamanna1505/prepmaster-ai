@@ -1,60 +1,83 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { Sparkles } from "lucide-react"
-import { buttonVariants } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { AuthShell, Field, fieldClass, fieldLabelClass } from "@/components/auth/auth-shell"
+import { PillButton } from "@/components/marketing/primitives"
 
 export const metadata: Metadata = {
-  title: "Get started",
+  title: "Create your account",
   description: "Create a free PrepMaster AI account.",
 }
 
+const EXAM_TARGETS = ["CAT", "CUET", "MBA Entrance", "Aptitude"]
+
 export default function RegisterPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
-      <div className="w-full max-w-md space-y-6 rounded-2xl border border-border/60 bg-card p-8 shadow-sm">
-        <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-          <span className="grid size-7 place-items-center rounded-md bg-primary text-primary-foreground">
-            <Sparkles className="size-4" />
-          </span>
-          PrepMaster AI
-        </Link>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Create your account</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Free during MVP. No card required.</p>
-        </div>
-        <form className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" placeholder="Your full name" />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" placeholder="you@example.com" />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="targetExam">Target exam (optional)</Label>
-            <Input id="targetExam" placeholder="e.g. JEE Main 2027" />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" placeholder="At least 8 characters" />
-          </div>
-          <button type="submit" className={`${buttonVariants({ size: "lg" })} w-full`}>
-            Create account
-          </button>
-        </form>
-        <p className="text-center text-sm text-muted-foreground">
+    <AuthShell
+      title="Create your account"
+      subtitle="Free during the MVP. No card required."
+      footer={
+        <>
           Already have an account?{" "}
-          <Link href="/login" className="font-medium text-foreground hover:underline">
-            Sign in
+          <Link href="/login" className="focus-ring rounded font-semibold text-orange hover:underline">
+            Log in
           </Link>
+        </>
+      }
+    >
+      <form className="space-y-5">
+        <Field id="name" label="Full name" placeholder="Your full name" autoComplete="name" />
+        <Field id="email" label="Email" type="email" placeholder="you@example.com" autoComplete="email" />
+        <Field id="phone" label="Phone" type="tel" placeholder="+91 00000 00000" autoComplete="tel" />
+
+        <div className="space-y-1.5">
+          <label htmlFor="examTarget" className={fieldLabelClass}>
+            Target exam
+          </label>
+          <select id="examTarget" name="examTarget" defaultValue="" className={fieldClass}>
+            <option value="" disabled>
+              Select your target exam
+            </option>
+            {EXAM_TARGETS.map((e) => (
+              <option key={e} value={e}>
+                {e}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field
+            id="password"
+            label="Password"
+            type="password"
+            placeholder="At least 8 characters"
+            autoComplete="new-password"
+          />
+          <Field
+            id="confirmPassword"
+            label="Confirm password"
+            type="password"
+            placeholder="Re-enter password"
+            autoComplete="new-password"
+          />
+        </div>
+
+        <PillButton type="submit" variant="ink" size="lg" className="w-full">
+          Create account
+        </PillButton>
+
+        <p className="text-center font-ui text-[12px] text-taupe">
+          By creating an account you agree to our{" "}
+          <Link href="/terms" className="text-cocoa underline">
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="text-cocoa underline">
+            Privacy Policy
+          </Link>
+          .
         </p>
-        <p className="text-center text-xs text-muted-foreground">
-          Auth is wired up in Phase 4.
-        </p>
-      </div>
-    </div>
+      </form>
+    </AuthShell>
   )
 }
