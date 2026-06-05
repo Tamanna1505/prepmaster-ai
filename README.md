@@ -128,14 +128,16 @@ No environment variables or database are required to run the prototype — every
 
 ## Sample / Demo Credentials
 
-Authentication is **not wired** in this prototype, so the login form does not authenticate — you can navigate to `/dashboard` and `/admin` directly. The login screen displays demo credentials to illustrate the intended roles:
+Authentication is **not wired** in the prototype UI, so the login form does not authenticate — you can navigate to `/dashboard` and `/admin` directly. The login screen displays demo credentials to illustrate the intended roles.
 
-| Role | Email |
-| --- | --- |
-| Student | `student@prepmaster.ai` |
-| Admin | `admin@prepmaster.ai` |
+Once the database is seeded (`npm run db:seed`, see [`BACKEND_PLAN.md`](./BACKEND_PLAN.md)), both demo accounts use the password **`password123`**:
 
-Sample student identity used across the dashboard: **Rajan Punchouty** (target: CAT 2026).
+| Role | Email | Password |
+| --- | --- | --- |
+| Student | `student@prepmaster.ai` | `password123` |
+| Admin | `admin@prepmaster.ai` | `password123` |
+
+> These are **demo credentials** for local development only. Sample student identity used across the dashboard: **Rajan Punchouty** (target: CAT 2026).
 
 ---
 
