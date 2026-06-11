@@ -4,6 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { signOut } from "next-auth/react"
 import { LogOut, Menu, X, type LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -97,14 +98,16 @@ function UserFooter({
           <p className="truncate font-ui text-[12px] text-taupe">{user.role}</p>
         </div>
       </div>
-      {/* Visual logout only — no real auth logic in this phase. */}
-      <Link
-        href="/login"
-        onClick={onNavigate}
-        className="focus-ring mt-3 flex items-center justify-center gap-2 rounded-full px-4 py-2 font-ui text-[14px] font-semibold text-cocoa shadow-[inset_0_0_0_1.5px_var(--color-line)] transition-colors hover:bg-surface-muted hover:text-ink"
+      <button
+        type="button"
+        onClick={() => {
+          onNavigate?.()
+          void signOut({ callbackUrl: "/login" })
+        }}
+        className="focus-ring mt-3 flex w-full items-center justify-center gap-2 rounded-full px-4 py-2 font-ui text-[14px] font-semibold text-cocoa shadow-[inset_0_0_0_1.5px_var(--color-line)] transition-colors hover:bg-surface-muted hover:text-ink"
       >
         <LogOut className="size-4" strokeWidth={1.75} /> Log out
-      </Link>
+      </button>
     </div>
   )
 }

@@ -1,0 +1,115 @@
+{
+  "type": "full-paper",
+  "test": {
+    "slug": "demo-cat-full-paper-01",
+    "title": "PrepMaster Demo — CAT Full Paper #01",
+    "description": "A short demo CAT slot paper with VARC, DILR and QA sections, including a DILR grouped set. Original demo questions only.",
+    "exam": "CAT",
+    "year": 2023,
+    "slot": "Slot 1 (DEMO)",
+    "testType": "FULL_MOCK",
+    "durationMinutes": 120,
+    "difficulty": "MEDIUM",
+    "positiveMarks": 3,
+    "negativeMarks": 1,
+    "status": "PUBLISHED"
+  },
+  "questionSets": [
+    {
+      "key": "cat-paper-dilr-1",
+      "exam": "CAT",
+      "year": 2023,
+      "slot": "Slot 1 (DEMO)",
+      "section": "DILR",
+      "title": "Daily commute times",
+      "setType": "DILR_SET",
+      "content": "Four colleagues report their one-way commute times: Pat 20 min, Quinn 35 min, Riya 15 min, and Sam 25 min.",
+      "sourceName": "PrepMaster AI — original demo set",
+      "sourceUrl": "https://prepmaster.ai/demo"
+    }
+  ],
+  "sections": [
+    {
+      "name": "VARC",
+      "subject": "VARC",
+      "questions": [
+        {
+          "exam": "CAT",
+          "subject": "VARC",
+          "topic": "Vocabulary",
+          "subtopic": "Antonyms",
+          "year": 2023,
+          "slot": "Slot 1 (DEMO)",
+          "questionNumber": 1,
+          "questionType": "SINGLE_CORRECT",
+          "questionText": "Choose the word most nearly OPPOSITE in meaning to 'expand':",
+          "optionA": "Enlarge",
+          "optionB": "Stretch",
+          "optionC": "Shrink",
+          "optionD": "Widen",
+          "correctAnswer": "C",
+          "explanation": "'Expand' means to grow larger; its antonym is 'shrink'.",
+          "difficulty": "EASY",
+          "marks": 3,
+          "negativeMarks": 1,
+          "sourceName": "PrepMaster AI — original demo question",
+          "sourceUrl": "https://prepmaster.ai/demo"
+        }
+      ]
+    },
+    {
+      "name": "DILR",
+      "subject": "DILR",
+      "questions": [
+        {
+          "exam": "CAT",
+          "subject": "DILR",
+          "topic": "Data Interpretation",
+          "subtopic": "Comparisons",
+          "year": 2023,
+          "slot": "Slot 1 (DEMO)",
+          "questionNumber": 41,
+          "questionType": "SINGLE_CORRECT",
+          "questionText": "Based on the commute set, who has the shortest one-way commute?",
+          "optionA": "Pat",
+          "optionB": "Quinn",
+          "optionC": "Riya",
+          "optionD": "Sam",
+          "correctAnswer": "C",
+          "explanation": "Riya's commute of 15 minutes is the shortest.",
+          "difficulty": "EASY",
+          "marks": 3,
+          "negativeMarks": 1,
+          "sourceName": "PrepMaster AI — original demo set",
+          "sourceUrl": "https://prepmaster.ai/demo",
+          "setKey": "cat-paper-dilr-1"
+        }
+      ]
+    },
+    {
+      "name": "QA",
+      "subject": "QA",
+      "questions": [
+        {
+          "exam": "CAT",
+          "subject": "QA",
+          "topic": "Arithmetic",
+          "subtopic": "Ratios",
+          "year": 2023,
+          "slot": "Slot 1 (DEMO)",
+          "questionNumber": 67,
+          "questionType": "NUMERIC",
+          "questionText": "If the ratio of two numbers is 2:3 and their sum is 30, the larger number is:",
+          "correctAnswer": "18",
+          "tolerance": 0,
+          "explanation": "Parts are 2x and 3x; 5x = 30 so x = 6; larger = 3x = 18.",
+          "difficulty": "MEDIUM",
+          "marks": 3,
+          "negativeMarks": 0,
+          "sourceName": "PrepMaster AI — original demo question",
+          "sourceUrl": "https://prepmaster.ai/demo"
+        }
+      ]
+    }
+  ]
+}

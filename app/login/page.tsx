@@ -1,14 +1,19 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { AuthShell, Field } from "@/components/auth/auth-shell"
-import { PillButton } from "@/components/marketing/primitives"
+import { redirect } from "next/navigation"
+import { getCurrentUser } from "@/lib/auth"
+import { AuthShell } from "@/components/auth/auth-shell"
+import { LoginForm } from "@/components/auth/login-form"
 
 export const metadata: Metadata = {
   title: "Log in",
   description: "Log in to PrepMaster AI.",
 }
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const user = await getCurrentUser()
+  if (user) redirect(user.role === "ADMIN" ? "/admin" : "/dashboard")
+
   return (
     <AuthShell
       title="Welcome back"
@@ -22,34 +27,9 @@ export default function LoginPage() {
         </>
       }
     >
-      <form className="space-y-5">
-        <Field id="email" label="Email" type="email" placeholder="you@example.com" autoComplete="email" />
-        <Field id="password" label="Password" type="password" placeholder="••••••••" autoComplete="current-password" />
+      <LoginForm />
 
-        <div className="flex items-center justify-between">
-          <label htmlFor="remember" className="flex cursor-pointer items-center gap-2 font-ui text-[14px] text-cocoa">
-            <input
-              id="remember"
-              name="remember"
-              type="checkbox"
-              className="focus-ring size-4 rounded-[5px] accent-[var(--color-ink)]"
-            />
-            Remember me
-          </label>
-          <Link
-            href="/contact"
-            className="focus-ring rounded font-ui text-[14px] font-medium text-orange hover:underline"
-          >
-            Forgot password?
-          </Link>
-        </div>
-
-        <PillButton type="submit" variant="ink" size="lg" className="w-full">
-          Log in
-        </PillButton>
-      </form>
-
-      {/* Demo credentials — sample only, no real auth wired in this phase. */}
+      {/* Demo credentials (seeded by `npm run db:seed`, password: password123). */}
       <div className="mt-6 rounded-[16px] bg-surface-muted p-4">
         <p className="eyebrow text-taupe">Demo credentials</p>
         <dl className="mt-2.5 space-y-1.5 font-data text-[13px] tracking-[-0.01em] text-cocoa">

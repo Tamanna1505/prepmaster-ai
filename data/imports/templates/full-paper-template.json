@@ -1,0 +1,102 @@
+{
+  "type": "full-paper",
+  "test": {
+    "slug": "exam-year-session-shift",
+    "title": "Paper title (e.g. JEE Main 2099 January Shift 1)",
+    "description": "Instructions and rules shown before the test.",
+    "exam": "JEE_MAIN",
+    "year": 2099,
+    "session": "JANUARY",
+    "shift": "Shift 1",
+    "testType": "PREVIOUS_YEAR",
+    "durationMinutes": 180,
+    "difficulty": "HARD",
+    "positiveMarks": 4,
+    "negativeMarks": 1,
+    "status": "PUBLISHED"
+  },
+  "questionSets": [],
+  "sections": [
+    {
+      "name": "Physics",
+      "subject": "PHYSICS",
+      "questions": [
+        {
+          "exam": "JEE_MAIN",
+          "subject": "PHYSICS",
+          "topic": "Topic name",
+          "year": 2099,
+          "session": "JANUARY",
+          "shift": "Shift 1",
+          "questionNumber": 1,
+          "questionType": "SINGLE_CORRECT",
+          "questionText": "Embedded question — created if it does not already exist.",
+          "optionA": "A",
+          "optionB": "B",
+          "optionC": "C",
+          "optionD": "D",
+          "correctAnswer": "B",
+          "explanation": "Why B.",
+          "difficulty": "MEDIUM",
+          "marks": 4,
+          "negativeMarks": 1,
+          "sourceName": "Official ... Question Paper",
+          "sourceUrl": "https://official-source.example/paper"
+        }
+      ]
+    },
+    {
+      "name": "Chemistry",
+      "subject": "CHEMISTRY",
+      "questions": [
+        {
+          "exam": "JEE_MAIN",
+          "subject": "CHEMISTRY",
+          "topic": "Topic name",
+          "year": 2099,
+          "session": "JANUARY",
+          "shift": "Shift 1",
+          "questionNumber": 31,
+          "questionType": "SINGLE_CORRECT",
+          "questionText": "Another embedded question.",
+          "optionA": "A",
+          "optionB": "B",
+          "optionC": "C",
+          "optionD": "D",
+          "correctAnswer": "A",
+          "explanation": "Why A.",
+          "difficulty": "EASY",
+          "marks": 4,
+          "negativeMarks": 1,
+          "sourceName": "Official ... Question Paper",
+          "sourceUrl": "https://official-source.example/paper"
+        }
+      ]
+    },
+    {
+      "name": "Mathematics",
+      "subject": "MATHEMATICS",
+      "questions": [
+        {
+          "exam": "JEE_MAIN",
+          "subject": "MATHEMATICS",
+          "topic": "Topic name",
+          "year": 2099,
+          "session": "JANUARY",
+          "shift": "Shift 1",
+          "questionNumber": 61,
+          "questionType": "NUMERIC",
+          "questionText": "A numeric question in the maths section.",
+          "correctAnswer": "7",
+          "explanation": "Working.",
+          "difficulty": "HARD",
+          "marks": 4,
+          "negativeMarks": 0,
+          "sourceName": "Official ... Question Paper",
+          "sourceUrl": "https://official-source.example/paper"
+        },
+        { "ref": "JEE_MAIN|2099|JANUARY|Shift 1|MATHEMATICS|Q62" }
+      ]
+    }
+  ]
+}

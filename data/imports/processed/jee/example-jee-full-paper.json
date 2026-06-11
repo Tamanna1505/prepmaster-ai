@@ -1,0 +1,105 @@
+{
+  "type": "full-paper",
+  "test": {
+    "slug": "demo-jee-full-paper-01",
+    "title": "PrepMaster Demo — JEE Main Full Paper #01",
+    "description": "A short demo full-length paper with Physics, Chemistry and Mathematics sections. Original demo questions only.",
+    "exam": "JEE_MAIN",
+    "year": 2024,
+    "session": "DEMO",
+    "shift": "Shift 1",
+    "testType": "FULL_MOCK",
+    "durationMinutes": 180,
+    "difficulty": "MEDIUM",
+    "positiveMarks": 4,
+    "negativeMarks": 1,
+    "status": "PUBLISHED"
+  },
+  "questionSets": [],
+  "sections": [
+    {
+      "name": "Physics",
+      "subject": "PHYSICS",
+      "questions": [
+        {
+          "exam": "JEE_MAIN",
+          "subject": "PHYSICS",
+          "topic": "Mechanics",
+          "subtopic": "Work, Energy and Power",
+          "year": 2024,
+          "session": "DEMO",
+          "shift": "Shift 1",
+          "questionNumber": 101,
+          "questionType": "SINGLE_CORRECT",
+          "questionText": "The kinetic energy of a body of mass 2 kg moving at 3 m/s is:",
+          "optionA": "6 J",
+          "optionB": "9 J",
+          "optionC": "12 J",
+          "optionD": "18 J",
+          "correctAnswer": "B",
+          "explanation": "KE = (1/2) m v^2 = 0.5 x 2 x 9 = 9 J.",
+          "difficulty": "MEDIUM",
+          "marks": 4,
+          "negativeMarks": 1,
+          "sourceName": "PrepMaster AI — original demo question",
+          "sourceUrl": "https://prepmaster.ai/demo"
+        }
+      ]
+    },
+    {
+      "name": "Chemistry",
+      "subject": "CHEMISTRY",
+      "questions": [
+        {
+          "exam": "JEE_MAIN",
+          "subject": "CHEMISTRY",
+          "topic": "Atomic Structure",
+          "subtopic": "Subatomic particles",
+          "year": 2024,
+          "session": "DEMO",
+          "shift": "Shift 1",
+          "questionNumber": 131,
+          "questionType": "SINGLE_CORRECT",
+          "questionText": "The particle with a negative charge in an atom is the:",
+          "optionA": "Proton",
+          "optionB": "Neutron",
+          "optionC": "Electron",
+          "optionD": "Nucleus",
+          "correctAnswer": "C",
+          "explanation": "Electrons carry a negative charge.",
+          "difficulty": "EASY",
+          "marks": 4,
+          "negativeMarks": 1,
+          "sourceName": "PrepMaster AI — original demo question",
+          "sourceUrl": "https://prepmaster.ai/demo"
+        }
+      ]
+    },
+    {
+      "name": "Mathematics",
+      "subject": "MATHEMATICS",
+      "questions": [
+        {
+          "exam": "JEE_MAIN",
+          "subject": "MATHEMATICS",
+          "topic": "Algebra",
+          "subtopic": "Linear equations",
+          "year": 2024,
+          "session": "DEMO",
+          "shift": "Shift 1",
+          "questionNumber": 161,
+          "questionType": "NUMERIC",
+          "questionText": "Solve for x: 3x + 6 = 21.",
+          "correctAnswer": "5",
+          "tolerance": 0,
+          "explanation": "3x = 15, so x = 5.",
+          "difficulty": "EASY",
+          "marks": 4,
+          "negativeMarks": 0,
+          "sourceName": "PrepMaster AI — original demo question",
+          "sourceUrl": "https://prepmaster.ai/demo"
+        }
+      ]
+    }
+  ]
+}

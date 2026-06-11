@@ -63,6 +63,26 @@ enum PublishStatus {
   ARCHIVED
 }
 
+enum ExamType {
+  JEE_MAIN
+  CAT
+}
+
+enum Subject {
+  PHYSICS
+  CHEMISTRY
+  MATHEMATICS
+  VARC
+  DILR
+  QA
+}
+
+enum QuestionSetType {
+  RC_PASSAGE
+  DILR_SET
+  STANDALONE
+}
+
 // ── Models ───────────────────────────────────────────────────────────────────
 
 model User {
@@ -174,30 +194,88 @@ model LessonProgress {
 }
 
 model Question {
-  id                   String       @id @default(cuid())
-  type                 QuestionType @default(SINGLE_CORRECT)
-  stem                 String
-  passage              String?
-  // For SINGLE_CORRECT: Array<{ id: string; text: string; isCorrect: boolean }>.
-  // For NUMERIC: null (use correctNumeric + tolerance).
-  options              Json?
-  correctNumeric       Float?
-  tolerance            Float?
-  explanation          String
-  section              String
-  topic                String
-  subTopic             String?
-  difficulty           Difficulty   @default(MEDIUM)
-  defaultPositiveMarks Float        @default(1)
-  defaultNegativeMarks Float        @default(0)
-  createdAt            DateTime     @default(now())
-  updatedAt            DateTime     @updatedAt
+  id        String  @id @default(cuid())
+  // Stable dedupe key derived from source metadata (import system).
+  importKey String? @unique
+
+  // Categorization
+  exam     ExamType?
+  subject  Subject?
+  topic    String
+  subTopic String?
+
+  // Source / paper provenance
+  year           Int?
+  session        String?
+  shift          String?
+  slot           String?
+  paperName      String?
+  questionNumber Int?
+  sourceName     String?
+  sourceUrl      String?
+  sourceYear     Int?
+
+  // Content
+  type             QuestionType @default(SINGLE_CORRECT)
+  stem             String // the question text
+  passage          String?
+  optionA          String?
+  optionB          String?
+  optionC          String?
+  optionD          String?
+  // "A".."D" for SINGLE_CORRECT; numeric string for NUMERIC.
+  correctAnswer    String?
+  // Legacy / engine representation kept for the seed + result engine:
+  // For SINGLE_CORRECT: Array<{ id; text; isCorrect }>. For NUMERIC: null.
+  options          Json?
+  correctNumeric   Float?
+  tolerance        Float?
+  explanation      String
+  imageUrl         String?
+  solutionImageUrl String?
+
+  // Classification + marking
+  section              String // section label, e.g. "PHYSICS", "QA"
+  difficulty           Difficulty @default(MEDIUM)
+  defaultPositiveMarks Float      @default(1)
+  defaultNegativeMarks Float      @default(0)
+
+  // Grouped sets (CAT RC passages / DILR sets)
+  questionSetId String?
+  questionSet   QuestionSet? @relation(fields: [questionSetId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   testQuestions TestQuestion[]
   testAnswers   TestAnswer[]
 
+  @@index([exam, subject, topic])
+  @@index([subject])
   @@index([topic, difficulty, type])
   @@index([section])
+  @@index([questionSetId])
+}
+
+model QuestionSet {
+  id         String          @id @default(cuid())
+  importKey  String?         @unique
+  exam       ExamType
+  year       Int?
+  slot       String?
+  section    Subject?
+  title      String
+  setType    QuestionSetType @default(STANDALONE)
+  // Shared passage / table / data for the set (markdown / LaTeX).
+  content    String
+  sourceName String?
+  sourceUrl  String?
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  questions Question[]
+
+  @@index([exam, section])
 }
 
 model Test {
@@ -205,9 +283,15 @@ model Test {
   slug            String        @unique
   title           String
   description     String
+  exam            ExamType?
   examTag         String?
+  year            Int?
+  session         String?
+  shift           String?
+  slot            String?
   testType        TestType      @default(FULL_MOCK)
   durationMinutes Int
+  totalMarks      Float?
   positiveMarks   Float         @default(1)
   negativeMarks   Float         @default(0)
   difficulty      Difficulty    @default(MEDIUM)
@@ -219,6 +303,7 @@ model Test {
   attempts      TestAttempt[]
 
   @@index([status, examTag])
+  @@index([exam, year])
 }
 
 model TestQuestion {

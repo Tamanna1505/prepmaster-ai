@@ -1,0 +1,62 @@
+{
+  "type": "question-bank",
+  "questionSets": [
+    {
+      "key": "dilr-demo-1",
+      "exam": "CAT",
+      "year": 2023,
+      "slot": "DEMO",
+      "section": "DILR",
+      "title": "Books bought by three friends",
+      "setType": "DILR_SET",
+      "content": "Three friends — Asha, Binoy, and Charu — visited a bookshop. Asha bought 3 books, Binoy bought 5 books, and Charu bought 4 books.",
+      "sourceName": "PrepMaster AI — original demo set",
+      "sourceUrl": "https://prepmaster.ai/demo"
+    }
+  ],
+  "questions": [
+    {
+      "exam": "CAT",
+      "subject": "DILR",
+      "topic": "Data Interpretation",
+      "subtopic": "Reading values",
+      "year": 2023,
+      "slot": "DEMO",
+      "questionNumber": 1,
+      "questionType": "SINGLE_CORRECT",
+      "questionText": "Based on the set, who bought the most books?",
+      "optionA": "Asha",
+      "optionB": "Binoy",
+      "optionC": "Charu",
+      "optionD": "Cannot be determined",
+      "correctAnswer": "B",
+      "explanation": "Binoy bought 5 books, more than Asha (3) and Charu (4).",
+      "difficulty": "EASY",
+      "marks": 3,
+      "negativeMarks": 1,
+      "sourceName": "PrepMaster AI — original demo set",
+      "sourceUrl": "https://prepmaster.ai/demo",
+      "setKey": "dilr-demo-1"
+    },
+    {
+      "exam": "CAT",
+      "subject": "DILR",
+      "topic": "Data Interpretation",
+      "subtopic": "Totals",
+      "year": 2023,
+      "slot": "DEMO",
+      "questionNumber": 2,
+      "questionType": "NUMERIC",
+      "questionText": "Based on the set, how many books did the three friends buy in total?",
+      "correctAnswer": "12",
+      "tolerance": 0,
+      "explanation": "3 + 5 + 4 = 12 books.",
+      "difficulty": "EASY",
+      "marks": 3,
+      "negativeMarks": 0,
+      "sourceName": "PrepMaster AI — original demo set",
+      "sourceUrl": "https://prepmaster.ai/demo",
+      "setKey": "dilr-demo-1"
+    }
+  ]
+}
