@@ -2,6 +2,10 @@ import type { Metadata } from "next"
 import { SiteShell } from "@/components/layout/site-shell"
 import { Container, Eyebrow } from "@/components/marketing/primitives"
 import { BlogExplorer } from "@/components/marketing/blog-explorer"
+import { getPublishedBlogPosts } from "@/lib/data/blogs"
+
+// Always reflect the live database (new posts appear without a rebuild).
+export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -9,7 +13,9 @@ export const metadata: Metadata = {
     "Long-form strategy, study hacks, and student success stories from PrepMaster AI — no fluff.",
 }
 
-export default function BlogIndexPage() {
+export default async function BlogIndexPage() {
+  const posts = await getPublishedBlogPosts()
+
   return (
     <SiteShell>
       <section className="border-b border-line bg-cream-100 py-14 sm:py-16">
@@ -27,7 +33,7 @@ export default function BlogIndexPage() {
 
       <section className="bg-cream-100 py-12 sm:py-16">
         <Container wide>
-          <BlogExplorer />
+          <BlogExplorer posts={posts} />
         </Container>
       </section>
     </SiteShell>

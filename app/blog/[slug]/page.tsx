@@ -4,7 +4,7 @@ import { Newspaper } from "lucide-react"
 import { SiteShell } from "@/components/layout/site-shell"
 import { Container, LearnMore, Photo, Tag } from "@/components/marketing/primitives"
 import { BlogCard } from "@/components/marketing/blog-card"
-import { blogPosts } from "@/lib/sample-data"
+import { getBlogPostBySlug, getPublishedBlogPosts } from "@/lib/data/blogs"
 
 export async function generateMetadata({
   params,
@@ -12,7 +12,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const post = blogPosts.find((p) => p.slug === slug)
+  const post = await getBlogPostBySlug(slug)
   return {
     title: post?.title ?? "Post",
     description: post?.summary,
@@ -21,14 +21,46 @@ export async function generateMetadata({
 
 const COVER_TONES = ["gold", "teal", "cream", "ink"] as const
 
+function toneForSlug(slug: string) {
+  const sum = slug.split("").reduce((s, ch) => s + ch.charCodeAt(0), 0)
+  return COVER_TONES[sum % COVER_TONES.length]
+}
+
+/* Minimal markdown-ish renderer for the stored body: headings (#/##), bullet
+   lists (- ), and paragraphs. Keeps the existing reading layout. */
+function renderBody(body: string) {
+  const blocks = body.trim().split(/\n{2,}/)
+  return blocks.map((block, i) => {
+    const lines = block.split("\n").map((l) => l.trim()).filter(Boolean)
+    if (lines.length === 0) return null
+
+    if (/^#{1,3}\s/.test(lines[0])) {
+      return (
+        <h2 key={i} className="mt-10 font-serif text-[26px] tracking-[-0.02em] text-ink">
+          {lines[0].replace(/^#{1,3}\s/, "")}
+        </h2>
+      )
+    }
+    if (lines.every((l) => /^[-*]\s/.test(l))) {
+      return (
+        <ul key={i} className="ml-5 list-disc space-y-2 marker:text-orange">
+          {lines.map((l, j) => (
+            <li key={j}>{l.replace(/^[-*]\s/, "")}</li>
+          ))}
+        </ul>
+      )
+    }
+    return <p key={i}>{lines.join(" ")}</p>
+  })
+}
+
 export default async function BlogPostPage({
   params,
 }: {
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const index = blogPosts.findIndex((p) => p.slug === slug)
-  const post = blogPosts[index]
+  const post = await getBlogPostBySlug(slug)
   if (!post) notFound()
 
   const date = new Date(post.publishedAt).toLocaleDateString("en-US", {
@@ -36,7 +68,7 @@ export default async function BlogPostPage({
     day: "numeric",
     year: "numeric",
   })
-  const related = blogPosts.filter((p) => p.slug !== slug).slice(0, 3)
+  const related = (await getPublishedBlogPosts()).filter((p) => p.slug !== slug).slice(0, 3)
 
   return (
     <SiteShell>
@@ -57,65 +89,39 @@ export default async function BlogPostPage({
           </header>
 
           <div className="mt-8">
-            <Photo
-              tone={COVER_TONES[index % COVER_TONES.length]}
-              icon={Newspaper}
-              label={post.category}
-              ratio="aspect-[16/9]"
-            />
+            <Photo tone={toneForSlug(slug)} icon={Newspaper} label={post.category} ratio="aspect-[16/9]" />
           </div>
 
-          {/* Body — sample content; live markdown rendering lands with the
-              content system (PRD §13). */}
           <div className="mt-10 space-y-5 text-[17px] leading-[1.7] text-cocoa">
-            <p>{post.summary}</p>
-            <p>
-              This is a sample article body that demonstrates the reading layout — typography,
-              measure, and spacing are final, while the words here stand in for real content that
-              the blog system will render once it is live.
-            </p>
-
-            <blockquote className="my-8 border-l-2 border-orange pl-5 font-serif text-[22px] italic leading-[1.4] text-ink">
-              The students who improve fastest aren&apos;t the ones who study the most — they&apos;re
-              the ones who know exactly what to fix next.
-            </blockquote>
-
-            <h2 className="mt-10 font-serif text-[26px] tracking-[-0.02em] text-ink">
-              What actually moves scores
-            </h2>
-            <p>
-              A good revision loop is short and specific: attempt, review, fix one named weakness,
-              repeat. The aim of every section below is to make that loop tighter and less
-              dependent on guesswork.
-            </p>
-            <ul className="ml-5 list-disc space-y-2 marker:text-orange">
-              <li>Long-form, no fluff</li>
-              <li>Examples drawn from real student data</li>
-              <li>Concrete next steps at the end</li>
-            </ul>
+            <p className="text-[19px] leading-[1.6] text-ink">{post.summary}</p>
+            {renderBody(post.body)}
           </div>
 
-          <div className="mt-10 flex flex-wrap gap-2">
-            {post.tags.map((tag) => (
-              <Tag key={tag} tone="outline">
-                #{tag}
-              </Tag>
-            ))}
-          </div>
+          {post.tags.length > 0 ? (
+            <div className="mt-10 flex flex-wrap gap-2">
+              {post.tags.map((tag) => (
+                <Tag key={tag} tone="outline">
+                  #{tag}
+                </Tag>
+              ))}
+            </div>
+          ) : null}
         </Container>
       </article>
 
       {/* Related posts */}
-      <section className="border-t border-line bg-cream-50 py-12 sm:py-16">
-        <Container wide>
-          <h2 className="font-serif text-[26px] tracking-[-0.02em] text-ink">Keep reading</h2>
-          <div className="mt-8 grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-            {related.map((p, i) => (
-              <BlogCard key={p.slug} post={p} index={i} />
-            ))}
-          </div>
-        </Container>
-      </section>
+      {related.length > 0 ? (
+        <section className="border-t border-line bg-cream-50 py-12 sm:py-16">
+          <Container wide>
+            <h2 className="font-serif text-[26px] tracking-[-0.02em] text-ink">Keep reading</h2>
+            <div className="mt-8 grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+              {related.map((p, i) => (
+                <BlogCard key={p.slug} post={p} index={i} />
+              ))}
+            </div>
+          </Container>
+        </section>
+      ) : null}
     </SiteShell>
   )
 }

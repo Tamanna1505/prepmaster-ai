@@ -1,7 +1,7 @@
 import Link from "next/link"
-import { BookOpen, Clock, Star } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
+import { BookOpen, Clock, GraduationCap, Layers, Star, Target } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { Course } from "@/lib/sample-data"
 import { Eyebrow, Tag } from "@/components/marketing/primitives"
 
 /* Course thumbnail tints rotate across the brand palette (gold / teal / cream). */
@@ -12,8 +12,26 @@ const TONES = [
   "bg-gold-100 text-gold-ink",
 ] as const
 
-export function CourseCard({ course, index = 0 }: { course: Course; index?: number }) {
-  const Icon = course.icon
+/* Fallback icons rotate when a course has no explicit icon (e.g. DB-backed). */
+const FALLBACK_ICONS: LucideIcon[] = [BookOpen, GraduationCap, Target, Layers]
+
+/* Minimal shape the card renders. Sample `Course` objects are a superset, so
+   they remain assignable; DB-backed courses may omit icon / rating / topics. */
+export type CourseCardItem = {
+  slug: string
+  title: string
+  summary: string
+  examTag: string
+  difficulty: string
+  lessonCount: number
+  durationHours: number
+  topics?: string[]
+  rating?: number
+  icon?: LucideIcon
+}
+
+export function CourseCard({ course, index = 0 }: { course: CourseCardItem; index?: number }) {
+  const Icon = course.icon ?? FALLBACK_ICONS[index % FALLBACK_ICONS.length]
   const tone = TONES[index % TONES.length]
 
   return (
@@ -32,7 +50,8 @@ export function CourseCard({ course, index = 0 }: { course: Course; index?: numb
       {/* Body */}
       <div className="flex flex-1 flex-col p-5">
         <Eyebrow tone="taupe">
-          {course.examTag} · {course.topics[0]}
+          {course.examTag}
+          {course.topics?.[0] ? ` · ${course.topics[0]}` : ` · ${course.difficulty}`}
         </Eyebrow>
         <h3 className="mt-2 font-serif text-[20px] leading-[1.2] text-ink">{course.title}</h3>
         <p className="mt-2 line-clamp-2 text-[14px] leading-[1.55] text-cocoa">{course.summary}</p>
@@ -44,12 +63,14 @@ export function CourseCard({ course, index = 0 }: { course: Course; index?: numb
           <span className="flex items-center gap-1.5">
             <Clock className="size-3.5" strokeWidth={1.75} /> {course.durationHours} hrs
           </span>
-          <span className="flex items-center gap-1.5">
-            <Star className="size-3.5 fill-amber text-amber" strokeWidth={1.75} />
-            <span className="font-data text-[12px] font-semibold tracking-[-0.02em] text-ink">
-              {course.rating.toFixed(1)}
+          {course.rating != null ? (
+            <span className="flex items-center gap-1.5">
+              <Star className="size-3.5 fill-amber text-amber" strokeWidth={1.75} />
+              <span className="font-data text-[12px] font-semibold tracking-[-0.02em] text-ink">
+                {course.rating.toFixed(1)}
+              </span>
             </span>
-          </span>
+          ) : null}
         </div>
       </div>
     </Link>

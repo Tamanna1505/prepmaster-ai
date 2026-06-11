@@ -2,21 +2,32 @@
 
 import { useMemo, useState } from "react"
 import { cn } from "@/lib/utils"
-import { blogPosts } from "@/lib/sample-data"
+import type { BlogPost } from "@/lib/sample-data"
 import { BlogCard } from "@/components/marketing/blog-card"
 
-const CATEGORIES = ["All", ...Array.from(new Set(blogPosts.map((p) => p.category)))]
-
-export function BlogExplorer() {
+export function BlogExplorer({ posts }: { posts: BlogPost[] }) {
   const [category, setCategory] = useState("All")
 
   // First post is the featured post; the rest are filterable.
-  const [featured, ...rest] = blogPosts
+  const [featured, ...rest] = posts
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(rest.map((p) => p.category)))],
+    [rest]
+  )
 
   const filtered = useMemo(() => {
     if (category === "All") return rest
     return rest.filter((p) => p.category === category)
   }, [category, rest])
+
+  if (posts.length === 0) {
+    return (
+      <div className="rounded-[20px] bg-surface p-12 text-center shadow-[inset_0_0_0_1px_var(--color-line)]">
+        <p className="font-serif text-[20px] text-ink">No articles published yet</p>
+        <p className="mt-2 text-[14px] text-cocoa">New writing is on the way — check back soon.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-12">
@@ -25,7 +36,7 @@ export function BlogExplorer() {
 
       {/* Category chips */}
       <div className="flex flex-wrap items-center gap-2">
-        {CATEGORIES.map((c) => (
+        {categories.map((c) => (
           <button
             key={c}
             type="button"

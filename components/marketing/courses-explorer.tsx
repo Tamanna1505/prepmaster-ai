@@ -3,20 +3,24 @@
 import { useMemo, useState } from "react"
 import { Search } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { courses } from "@/lib/sample-data"
+import type { PublicCourseListItem } from "@/lib/data/courses"
 import { CourseCard } from "@/components/marketing/course-card"
 
-const EXAMS = ["All", ...Array.from(new Set(courses.map((c) => c.examTag)))]
 const SORTS = [
-  { value: "popular", label: "Most popular" },
-  { value: "rating", label: "Top rated" },
+  { value: "newest", label: "Newest" },
   { value: "lessons", label: "Most lessons" },
+  { value: "az", label: "A–Z" },
 ] as const
 
-export function CoursesExplorer() {
+export function CoursesExplorer({ courses }: { courses: PublicCourseListItem[] }) {
   const [exam, setExam] = useState("All")
   const [query, setQuery] = useState("")
-  const [sort, setSort] = useState<(typeof SORTS)[number]["value"]>("popular")
+  const [sort, setSort] = useState<(typeof SORTS)[number]["value"]>("newest")
+
+  const exams = useMemo(
+    () => ["All", ...Array.from(new Set(courses.map((c) => c.examTag)))],
+    [courses]
+  )
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -30,11 +34,20 @@ export function CoursesExplorer() {
       return matchesExam && matchesQuery
     })
     return [...list].sort((a, b) => {
-      if (sort === "rating") return b.rating - a.rating
       if (sort === "lessons") return b.lessonCount - a.lessonCount
-      return b.studentsEnrolled - a.studentsEnrolled
+      if (sort === "az") return a.title.localeCompare(b.title)
+      return 0 // "newest" keeps the server order (createdAt desc)
     })
-  }, [exam, query, sort])
+  }, [courses, exam, query, sort])
+
+  if (courses.length === 0) {
+    return (
+      <div className="rounded-[20px] bg-surface p-12 text-center shadow-[inset_0_0_0_1px_var(--color-line)]">
+        <p className="font-serif text-[20px] text-ink">No courses published yet</p>
+        <p className="mt-2 text-[14px] text-cocoa">New courses are on the way — check back soon.</p>
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -42,7 +55,7 @@ export function CoursesExplorer() {
       <div className="sticky top-16 z-30 -mx-5 mb-8 border-y border-line bg-cream-100/90 px-5 py-4 backdrop-blur-md sm:-mx-8 sm:px-8">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap items-center gap-2">
-            {EXAMS.map((e) => (
+            {exams.map((e) => (
               <button
                 key={e}
                 type="button"

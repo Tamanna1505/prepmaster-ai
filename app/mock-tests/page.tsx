@@ -3,6 +3,10 @@ import { LineChart, ListChecks, Sparkle, Target } from "lucide-react"
 import { SiteShell } from "@/components/layout/site-shell"
 import { Container, Eyebrow, SectionHead } from "@/components/marketing/primitives"
 import { PublicTestBrowser } from "@/components/tests/public-test-browser"
+import { getPublishedTests } from "@/lib/data/tests"
+
+// Always reflect the live database (new tests appear without a rebuild).
+export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "Mock tests",
@@ -28,7 +32,9 @@ const ANALYTICS_POINTS = [
   },
 ]
 
-export default function MockTestsPage() {
+export default async function MockTestsPage() {
+  const tests = await getPublishedTests()
+
   return (
     <SiteShell>
       {/* Hero */}
@@ -52,7 +58,7 @@ export default function MockTestsPage() {
       {/* Browser */}
       <section className="bg-cream-100 py-12 sm:py-16">
         <Container wide>
-          <PublicTestBrowser />
+          <PublicTestBrowser tests={tests} />
         </Container>
       </section>
 

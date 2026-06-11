@@ -1,38 +1,49 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import {
-  DIFFICULTIES,
-  EXAM_TYPES,
-  TEST_TYPES,
-  examTests,
-} from "@/lib/test-data"
+import type { PublicTest } from "@/lib/test-data"
 import { TestFilterBar } from "@/components/tests/test-filter-bar"
 import { TestCard } from "@/components/tests/test-card"
 
-export function PublicTestBrowser() {
+export function PublicTestBrowser({ tests }: { tests: PublicTest[] }) {
   const [exam, setExam] = useState("All")
   const [type, setType] = useState("All")
   const [difficulty, setDifficulty] = useState("All")
 
+  const exams = useMemo(() => ["All", ...Array.from(new Set(tests.map((t) => t.examTag)))], [tests])
+  const types = useMemo(() => ["All", ...Array.from(new Set(tests.map((t) => t.testType)))], [tests])
+  const difficulties = useMemo(
+    () => ["All", ...Array.from(new Set(tests.map((t) => t.difficulty)))],
+    [tests]
+  )
+
   const filtered = useMemo(
     () =>
-      examTests.filter(
+      tests.filter(
         (t) =>
           (exam === "All" || t.examTag === exam) &&
           (type === "All" || t.testType === type) &&
           (difficulty === "All" || t.difficulty === difficulty)
       ),
-    [exam, type, difficulty]
+    [tests, exam, type, difficulty]
   )
+
+  if (tests.length === 0) {
+    return (
+      <div className="rounded-[20px] bg-surface p-12 text-center shadow-[inset_0_0_0_1px_var(--color-line)]">
+        <p className="font-serif text-[20px] text-ink">No mock tests published yet</p>
+        <p className="mt-2 text-[14px] text-cocoa">Tests will appear here as they go live.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-8">
       <TestFilterBar
         groups={[
-          { label: "Exam", options: EXAM_TYPES, active: exam, onChange: setExam },
-          { label: "Type", options: TEST_TYPES, active: type, onChange: setType },
-          { label: "Difficulty", options: DIFFICULTIES, active: difficulty, onChange: setDifficulty },
+          { label: "Exam", options: exams, active: exam, onChange: setExam },
+          { label: "Type", options: types, active: type, onChange: setType },
+          { label: "Difficulty", options: difficulties, active: difficulty, onChange: setDifficulty },
         ]}
       />
 

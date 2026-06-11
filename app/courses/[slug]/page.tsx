@@ -1,16 +1,10 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { BookOpen, Clock, Star, Users } from "lucide-react"
+import { BookOpen, Clock, GraduationCap, Users } from "lucide-react"
 import { SiteShell } from "@/components/layout/site-shell"
-import {
-  Container,
-  Eyebrow,
-  LearnMore,
-  PillLink,
-  Tag,
-} from "@/components/marketing/primitives"
-import { CourseSyllabus, type SyllabusModule } from "@/components/marketing/course-syllabus"
-import { courses } from "@/lib/sample-data"
+import { Container, Eyebrow, LearnMore, PillLink, Tag } from "@/components/marketing/primitives"
+import { CourseSyllabus } from "@/components/marketing/course-syllabus"
+import { getCourseBySlug } from "@/lib/data/courses"
 
 export async function generateMetadata({
   params,
@@ -18,39 +12,11 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const course = courses.find((c) => c.slug === slug)
+  const course = await getCourseBySlug(slug)
   return {
     title: course?.title ?? "Course",
     description: course?.summary,
   }
-}
-
-/* Sample module outline — the live Course → Module → Lesson hierarchy lands in
-   Phase 5 (PRD §9). */
-function sampleModules(course: (typeof courses)[number]): SyllabusModule[] {
-  const [t0, t1, t2, t3] = course.topics
-  return [
-    {
-      title: "Module 1 · Foundations",
-      meta: "8 lessons · 5 hrs",
-      lessons: [`${t0 ?? "Core concepts"} — overview`, "Key definitions and intuition", "Worked examples"],
-    },
-    {
-      title: `Module 2 · ${t1 ?? "Core concepts"}`,
-      meta: "14 lessons · 11 hrs",
-      lessons: ["Concept videos", "Common pitfalls", "Topic-wise practice set", "Mini mock test"],
-    },
-    {
-      title: `Module 3 · ${t2 ?? "Advanced problems"}`,
-      meta: "11 lessons · 9 hrs",
-      lessons: ["Advanced problem patterns", "Previous-year drills", "Speed techniques"],
-    },
-    {
-      title: `Module 4 · ${t3 ?? "Revision"} & mock tests`,
-      meta: "6 lessons · 4 hrs",
-      lessons: ["Full-length mock", "AI feedback walkthrough", "Final revision sheet"],
-    },
-  ]
 }
 
 export default async function CourseDetailPage({
@@ -59,11 +25,8 @@ export default async function CourseDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const course = courses.find((c) => c.slug === slug)
+  const course = await getCourseBySlug(slug)
   if (!course) notFound()
-
-  const Icon = course.icon
-  const modules = sampleModules(course)
 
   return (
     <SiteShell>
@@ -73,7 +36,7 @@ export default async function CourseDetailPage({
           <LearnMore label="All courses" href="/courses" />
           <div className="mt-6 flex items-center gap-3">
             <span className="grid size-12 place-items-center rounded-xl bg-gold-200 text-gold-ink">
-              <Icon className="size-6" strokeWidth={1.75} />
+              <GraduationCap className="size-6" strokeWidth={1.75} />
             </span>
             <Tag tone="outline">{course.examTag}</Tag>
             <Tag tone="teal">{course.difficulty}</Tag>
@@ -86,19 +49,14 @@ export default async function CourseDetailPage({
             <span className="flex items-center gap-1.5">
               <BookOpen className="size-4" strokeWidth={1.75} /> {course.lessonCount} lessons
             </span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="size-4" strokeWidth={1.75} /> {course.durationHours} hours
-            </span>
+            {course.durationHours > 0 ? (
+              <span className="flex items-center gap-1.5">
+                <Clock className="size-4" strokeWidth={1.75} /> {course.durationHours} hours
+              </span>
+            ) : null}
             <span className="flex items-center gap-1.5">
               <Users className="size-4" strokeWidth={1.75} />{" "}
               {course.studentsEnrolled.toLocaleString()} enrolled
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Star className="size-4 fill-amber text-amber" strokeWidth={1.75} />
-              <span className="font-data tracking-[-0.02em] text-ink">
-                {course.rating.toFixed(1)}
-              </span>{" "}
-              / 5
             </span>
           </div>
         </Container>
@@ -109,27 +67,45 @@ export default async function CourseDetailPage({
         <Container>
           <div className="grid gap-10 lg:grid-cols-[1.7fr_1fr]">
             <div className="space-y-10">
-              <div>
-                <Eyebrow>What you&apos;ll learn</Eyebrow>
-                <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
-                  {course.topics.map((t) => (
-                    <li
-                      key={t}
-                      className="flex items-center gap-2.5 rounded-[14px] bg-surface px-4 py-3 font-ui text-[14px] text-cocoa shadow-[inset_0_0_0_1px_var(--color-line)]"
-                    >
-                      <span className="size-1.5 rounded-full bg-orange" /> {t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {course.description ? (
+                <div>
+                  <Eyebrow>About this course</Eyebrow>
+                  <p className="mt-4 max-w-2xl text-[16px] leading-[1.7] text-cocoa">
+                    {course.description}
+                  </p>
+                </div>
+              ) : null}
+
+              {course.topics.length > 0 ? (
+                <div>
+                  <Eyebrow>What you&apos;ll learn</Eyebrow>
+                  <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
+                    {course.topics.map((t) => (
+                      <li
+                        key={t}
+                        className="flex items-center gap-2.5 rounded-[14px] bg-surface px-4 py-3 font-ui text-[14px] text-cocoa shadow-[inset_0_0_0_1px_var(--color-line)]"
+                      >
+                        <span className="size-1.5 rounded-full bg-orange" /> {t}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
 
               <div>
                 <Eyebrow>Course outline</Eyebrow>
                 <h2 className="mt-3 font-serif text-[26px] tracking-[-0.02em] text-ink">
-                  {modules.length} modules · {course.lessonCount} lessons
+                  {course.modules.length} module{course.modules.length === 1 ? "" : "s"} ·{" "}
+                  {course.lessonCount} lesson{course.lessonCount === 1 ? "" : "s"}
                 </h2>
                 <div className="mt-5">
-                  <CourseSyllabus modules={modules} />
+                  {course.modules.length > 0 ? (
+                    <CourseSyllabus modules={course.modules} />
+                  ) : (
+                    <p className="rounded-[16px] bg-surface px-5 py-4 font-ui text-[14px] text-taupe shadow-[inset_0_0_0_1px_var(--color-line)]">
+                      The curriculum for this course is being prepared.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

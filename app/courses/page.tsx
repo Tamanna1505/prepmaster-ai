@@ -2,6 +2,10 @@ import type { Metadata } from "next"
 import { SiteShell } from "@/components/layout/site-shell"
 import { Container, Eyebrow } from "@/components/marketing/primitives"
 import { CoursesExplorer } from "@/components/marketing/courses-explorer"
+import { getPublishedCourses } from "@/lib/data/courses"
+
+// Always reflect the live database (new courses appear without a rebuild).
+export const dynamic = "force-dynamic"
 
 export const metadata: Metadata = {
   title: "Courses",
@@ -9,7 +13,9 @@ export const metadata: Metadata = {
     "Browse structured courses for JEE, NEET, UPSC, SSC, GATE, and banking exams — built around the syllabus, with topic-wise tests and AI feedback.",
 }
 
-export default function CoursesPage() {
+export default async function CoursesPage() {
+  const courses = await getPublishedCourses()
+
   return (
     <SiteShell>
       <section className="border-b border-line bg-cream-100 py-14 sm:py-16">
@@ -27,7 +33,7 @@ export default function CoursesPage() {
 
       <section className="bg-cream-100 py-8 sm:py-10">
         <Container wide>
-          <CoursesExplorer />
+          <CoursesExplorer courses={courses} />
         </Container>
       </section>
     </SiteShell>
