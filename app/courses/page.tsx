@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 }
 
 export default async function CoursesPage() {
-  const courses = await getPublishedCourses()
+  const courses = (await getPublishedCourses()) ?? []
 
   return (
     <SiteShell>

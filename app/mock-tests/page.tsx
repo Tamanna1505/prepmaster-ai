@@ -33,7 +33,7 @@ const ANALYTICS_POINTS = [
 ]
 
 export default async function MockTestsPage() {
-  const tests = await getPublishedTests()
+  const tests = (await getPublishedTests()) ?? []
 
   return (
     <SiteShell>

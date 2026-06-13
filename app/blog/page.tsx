@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 }
 
 export default async function BlogIndexPage() {
-  const posts = await getPublishedBlogPosts()
+  const posts = (await getPublishedBlogPosts()) ?? []
 
   return (
     <SiteShell>
